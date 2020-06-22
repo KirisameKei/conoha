@@ -62,7 +62,7 @@ async def on_ready():
         login_notice_ch = client1.get_channel(595072269483638785)
         with open("version.txt") as f:
             version = f.read()
-        await login_notice_ch.send(f"{client1.user.name}がログインしました(from: {where_from})\nversion: {version}\nこれ表示される？")
+        await login_notice_ch.send(f"{client1.user.name}がログインしました(from: {where_from})\nversion: {version}")
         try:
             print(f"{client1.user.name}がログインしました")
         except UnicodeEncodeError:
@@ -264,14 +264,14 @@ async def on_message(message):
             await client1.close()
         
         try:
-            if message.guild.id == 585998962050203672 or message.guild.id == 604945424922574848: #けい鯖、いろは鯖なら
-                await server_log.server_log_on_message(client1, message)
-
             if message.content.startswith("#") or message.content.startswith("//") or (message.content.startswith(r"/\*") and message.content.endswith(r"\*/")):
                 return
 
             if message.guild is None:
                 return
+
+            if message.guild.id == 585998962050203672 or message.guild.id == 604945424922574848: #けい鯖、いろは鯖なら
+                await server_log.server_log_on_message(client1, message)
 
             if message.guild.id == 585998962050203672:
                 await kei_server.on_message(client1, message)

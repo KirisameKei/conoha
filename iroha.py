@@ -27,9 +27,10 @@ async def on_message(client1, message):
     いろは鯖に関する機能"""
 
     if message.channel.id == 605401823561383937 and message.author.id == 606668660853178399:
-        msg = message.embeds[0].author.name
-        if msg.endswith("joined the server"):
-            await iroha_server_login(message)
+        if message.embeds:
+            msg = message.embeds[0].author.name
+            if msg.endswith("joined the server"):
+                await iroha_server_login(message)
         #if message.content.endswith("joined the server for the first time"):
         #    await iroha_server_first_login(message)
 

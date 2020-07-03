@@ -1348,7 +1348,13 @@ async def change_date(client1):
     with open(f"{Y_m}.json", mode="r") as f:
         message_dict = json.load(f)
     yesterday_messages = message_dict[yesterday]
-    before_yesterday_messages = message_dict[before_yesterday]
+    try:
+        before_yesterday_messages = message_dict[before_yesterday]
+    except KeyError:
+        before_yesterday_month = (datetime.date.today() - datetime.timedelta(days=2)).strftime(r"%Y%m")
+        with open(f"{before_yesterday_month}.json", mode="r") as f:
+            message_dict = json.load(f)
+        before_yesterday_messages = message_dict[before_yesterday]
     plus_minus = yesterday_messages - before_yesterday_messages
     if plus_minus > 0:
         plus_minus = f"+{plus_minus}"

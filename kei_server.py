@@ -161,12 +161,8 @@ async def count_message(message):
     """
     投稿されたメッセージ数を数える"""
 
-    Y_m = datetime.date.today().strftime(r"%Y%m")
-    try:
-        with open(f"{Y_m}.json", mode="r") as f:
-            counter_dict = json.load(f)
-    except FileNotFoundError:
-        counter_dict = {}
+    with open("count_message.json", mode="r") as f:
+        counter_dict = json.load(f)
 
     today = datetime.date.today().strftime(r"%Y%m%d")
     try:
@@ -174,7 +170,7 @@ async def count_message(message):
     except KeyError:
         counter_dict[today] = 1
 
-    with open(f"{Y_m}.json", mode="w") as f:
+    with open("count_message.json", mode="w") as f:
         counter_json = json.dumps(counter_dict, indent=4)
         f.write(counter_json)
 
@@ -1335,7 +1331,7 @@ async def change_date(client1):
     before_yesterday = (datetime.datetime.now() - datetime.timedelta(days=2)).strftime(r"%Y%m%d")
     year = datetime.date.today().year
     finished_percentage = round((datetime.date.today().timetuple()[7] - 1) / 365 * 100, 2)
-    if datetime.date.today().month >= 6 and datetime.date.today().day >= 30:
+    if datetime.date.today().month >= datetime.date(year, 6, 29):
         year += 1
     seichisaba_birthday = datetime.date(year, 6, 29)
     how_many_days = str(seichisaba_birthday - datetime.date.today())
@@ -1344,17 +1340,10 @@ async def change_date(client1):
     text = f"今日の日付: {today}\n{year}年の{finished_percentage}%が終了しました\n整地鯖{year-2016}周年まであと{how_many_days}日です"
     daily_embed = discord.Embed(title=f"日付変更をお知らせします", description=text, color=0xfffffe)
 
-    Y_m = (datetime.date.today() - datetime.timedelta(days=1)).strftime(r"%Y%m")
-    with open(f"{Y_m}.json", mode="r") as f:
+    with open("count_message.json", mode="r") as f:
         message_dict = json.load(f)
     yesterday_messages = message_dict[yesterday]
-    try:
-        before_yesterday_messages = message_dict[before_yesterday]
-    except KeyError:
-        before_yesterday_month = (datetime.date.today() - datetime.timedelta(days=2)).strftime(r"%Y%m")
-        with open(f"{before_yesterday_month}.json", mode="r") as f:
-            message_dict = json.load(f)
-        before_yesterday_messages = message_dict[before_yesterday]
+    before_yesterday_messages = message_dict[before_yesterday]
     plus_minus = yesterday_messages - before_yesterday_messages
     if plus_minus > 0:
         plus_minus = f"+{plus_minus}"

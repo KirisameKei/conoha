@@ -67,6 +67,8 @@ async def on_member_remove(client1, member):
 
     try:
         user_data_dict[f"{member.id}"]["mcid"] = []
+        user_data_dict[f"{member.id}"]["point"] = 0
+        user_data_dict[f"{member.id}"]["speak"] = 0
     except KeyError:
         user_data_dict[f"{member.id}"] = {"ban": False, "role": [], "mcid": [], "point": 0, "speak": 0}
 

@@ -356,11 +356,28 @@ async def crd_pt(message, user_id):
     await message.channel.send(f"{user_name}への補填結果: {touraku}{get_pt}ptゲット！\n{user_name}の保有pt: {had_pt}→{had_pt+get_pt}")
 
 
+async def sum_pt(message):
+    """
+    現在のptの合計を求める関数"""
+
+    with open("user_data.json", mode="r") as f:
+        user_data_dict = json.load(f)
+
+    pt = 0
+    for user_data in user_data_dict.values():
+        pt += user_data["point"]
+
+    lc, amari = divmod(pt, 3456)
+    st, ko = divmod(amari, 64)
+
+    await message.channel.send(f"合計{pt}pt({lc}LC+{st}st+{ko})")
+
+
 async def edit_pt(message):
     """
-    第一引数：操作(付与、剥奪、セット、補償)
-    第二引数：対象のID
-    第三引数(crdでは不要)：pt"""
+    第一引数：操作(付与、剥奪、セット、補償、合計算出)
+    第二引数：対象のID(sumでは不要)
+    第三引数(crd、sumでは不要)：pt"""
 
     if not message.author.id == 523303776120209408:
         await message.channel.send("何様のつもり？")
@@ -368,15 +385,18 @@ async def edit_pt(message):
 
     try:
         operation = message.content.split()[1]
+        if operation == "sum":
+            await sum_pt(message)
+            return
         user_id = int(message.content.split()[2])
     except ValueError:
-        await message.channel.send("第二引数が不正です\nヒント：/pt␣[add, use, set, crd]␣ID␣(n(n≧0))")
+        await message.channel.send("第二引数が不正です\nヒント：/pt␣[add, use, set, crd, sum]␣ID␣(n(n≧0))")
         return
     if not operation == "crd":
         try:
             pt = int(message.content.split()[3])
         except ValueError:
-            await message.channel.send("第三引数が不正です\nヒント：/pt␣[add, use, set, crd]␣ID␣(n(n≧0))")
+            await message.channel.send("第三引数が不正です\nヒント：/pt␣[add, use, set, crd, sum]␣ID␣(n(n≧0))")
             return
 
     if operation == "add":

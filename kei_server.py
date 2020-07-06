@@ -1353,7 +1353,7 @@ async def change_date(client1):
     before_yesterday = (datetime.datetime.now() - datetime.timedelta(days=2)).strftime(r"%Y%m%d")
     year = datetime.date.today().year
     finished_percentage = round((datetime.date.today().timetuple()[7] - 1) / 365 * 100, 2)
-    if datetime.date.today().month >= datetime.date(year, 6, 29):
+    if datetime.date.today() >= datetime.date(year, 6, 29):
         year += 1
     seichisaba_birthday = datetime.date(year, 6, 29)
     how_many_days = str(seichisaba_birthday - datetime.date.today())

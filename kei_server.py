@@ -176,6 +176,9 @@ async def count_message(message):
         counter_json = json.dumps(counter_dict, indent=4)
         f.write(counter_json)
 
+    if message.channel.id == 586075792950296576:
+        return
+
     with open("user_data.json", mode="r") as f:
         user_data_dict = json.load(f)
 

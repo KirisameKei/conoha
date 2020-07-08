@@ -618,6 +618,9 @@ async def user_data(client1, message):
     speak = user_data["speak"]
     user_data_embed.add_field(name="speak", value=f"{speak}", inline=True)
 
+    joined_time = (member.joined_at + datetime.timedelta(hours=9)).strftime(r"%Y/%m/%d-%H:%M")
+    user_data_embed.add_field(name="joined", value=joined_time, inline=True)
+
     await message.channel.send(embed=user_data_embed)
 
 

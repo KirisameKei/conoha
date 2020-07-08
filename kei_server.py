@@ -9,6 +9,7 @@ import string
 
 import bs4
 import discord
+import mojimoji
 import requests
 
 async def on_member_join(client1, member):
@@ -205,6 +206,24 @@ async def login_bonus(message):
 
     if message.author.bot:
         return
+
+    msg = mojimoji.han_to_zen(mojimoji.zen_to_han(message.content, kana=False), ascii=False) #全角英字を半角に、半角カタカナを全角に
+    msg = msg.lower()
+    msg = msg.replace("ma", "ま").replace("ri", "り").replace("sa", "さ")
+    msg = msg.replace("マ", "ま").replace("リ", "り").replace("サ", "さ")
+    msg = msg.replace("chan", "ちゃん").replace("tyan", "ちゃん").replace("tan", "たん")
+    msg = msg.replace("チ", "ち").replace("ャ", "ゃ").replace("タ", "た").replace("ン", "ん")
+    msg = msg.replace("　", "").replace(" ", "").replace("\n", "").replace("゛", "")
+    NG_word_list = [
+        "魔理",
+        "まりさ",
+        "まりちゃん",
+        "まりたん",
+    ]
+    for NG_word in NG_word_list:
+        if NG_word in msg:
+            await message.channel.send("強制はずれ")
+            return
 
     kouho_list = ["おめでとう！", "はずれ", "はずれ"]
     touraku = random.choice(kouho_list)

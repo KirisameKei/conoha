@@ -189,8 +189,24 @@ async def count_message(message):
         user_data_dict[f"{message.author.id}"]["speak"] = 1
 
     regular_member_1_role = discord.utils.get(message.guild.roles, id=641454086310461478)
+    regular_member_2_role = discord.utils.get(message.guild.roles, id=726246561100857345)
+    regular_member_3_role = discord.utils.get(message.guild.roles, id=726246637185531904)
+    now = datetime.datetime.now()
+    joined_time = message.author.joined_at + datetime.timedelta(hours=9)
     if regular_member_1_role in message.author.roles:
-        pass
+        if regular_member_2_role in message.author.roles:
+            if regular_member_3_role in message.author.roles:
+                pass
+            else:
+                print(3)
+                if user_data_dict[f"{message.author.id}"]["speak"] >= 3000 and joined_time + datetime.timedelta(days=365) <= now:
+                    await message.author.add_roles(regular_member_1_role)
+                    
+        else:
+            print(2)
+            print(joined_time + datetime.timedelta(days=182, hours=12))
+            if user_data_dict[f"{message.author.id}"]["speak"] >= 2000 and joined_time + datetime.timedelta(days=182, hours=12) <= now:
+                await message.author.add_roles(regular_member_1_role)
     else:
         if user_data_dict[f"{message.author.id}"]["speak"] >= 1000:
             await message.author.add_roles(regular_member_1_role)
@@ -213,7 +229,7 @@ async def login_bonus(message):
     msg = msg.replace("マ", "ま").replace("リ", "り").replace("サ", "さ")
     msg = msg.replace("chan", "ちゃん").replace("tyan", "ちゃん").replace("tan", "たん")
     msg = msg.replace("チ", "ち").replace("ャ", "ゃ").replace("タ", "た").replace("ン", "ん")
-    msg = msg.replace("　", "").replace(" ", "").replace("\n", "").replace("゛", "")
+    msg = msg.replace("　", "").replace(" ", "").replace("\n", "").replace("゛", "").replace("っ", "")
     NG_word_list = [
         "魔理",
         "まりさ",

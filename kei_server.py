@@ -198,13 +198,10 @@ async def count_message(message):
             if regular_member_3_role in message.author.roles:
                 pass
             else:
-                print(3)
                 if user_data_dict[f"{message.author.id}"]["speak"] >= 3000 and joined_time + datetime.timedelta(days=365) <= now:
                     await message.author.add_roles(regular_member_1_role)
                     
         else:
-            print(2)
-            print(joined_time + datetime.timedelta(days=182, hours=12))
             if user_data_dict[f"{message.author.id}"]["speak"] >= 2000 and joined_time + datetime.timedelta(days=182, hours=12) <= now:
                 await message.author.add_roles(regular_member_1_role)
     else:

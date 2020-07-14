@@ -193,17 +193,17 @@ async def count_message(message):
     regular_member_3_role = discord.utils.get(message.guild.roles, id=726246637185531904)
     now = datetime.datetime.now()
     joined_time = message.author.joined_at + datetime.timedelta(hours=9)
-    if regular_member_1_role in message.author.roles:
-        if regular_member_2_role in message.author.roles:
-            if regular_member_3_role in message.author.roles:
-                pass
-            else:
-                if user_data_dict[f"{message.author.id}"]["speak"] >= 3000 and joined_time + datetime.timedelta(days=365) <= now:
-                    await message.author.add_roles(regular_member_1_role)
-                    
-        else:
-            if user_data_dict[f"{message.author.id}"]["speak"] >= 2000 and joined_time + datetime.timedelta(days=182, hours=12) <= now:
-                await message.author.add_roles(regular_member_1_role)
+
+    if regular_member_3_role in message.author.roles:
+        pass
+    elif regular_member_2_role in message.author.roles:
+        if user_data_dict[f"{message.author.id}"]["speak"] >= 3000 and joined_time + datetime.timedelta(days=365) <= now:
+            await message.author.add_roles(regular_member_3_role)
+            await message.author.remove_roles(regular_member_2_role)
+    elif regular_member_1_role in message.author.roles:
+        if user_data_dict[f"{message.author.id}"]["speak"] >= 2000 and joined_time + datetime.timedelta(days=182, hours=12) <= now:
+            await message.author.add_roles(regular_member_2_role)
+            await message.author.remove_roles(regular_member_1_role)
     else:
         if user_data_dict[f"{message.author.id}"]["speak"] >= 1000:
             await message.author.add_roles(regular_member_1_role)

@@ -123,8 +123,8 @@ async def on_message(client1, message):
     if message.channel.id == 634602609017225225:
         await login_bonus(message)
 
-    if message.channel.id == 665487669953953804:
-        await kikaku(message)
+    #if message.channel.id == 665487669953953804:
+    #    await kikaku(message)
 
     if message.content.startswith("/pt"):
         await edit_pt(message)

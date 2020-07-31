@@ -63,7 +63,7 @@ async def on_ready():
         login_notice_ch = client1.get_channel(595072269483638785)
         with open("version.txt") as f:
             version = f.read()
-        await login_notice_ch.send(f"{client1.user.name}がログインしました(from: {where_from})\nhoge\nversion: {version}")
+        await login_notice_ch.send(f"{client1.user.name}がログインしました(from: {where_from})\nversion: {version}")
         try:
             print(f"{client1.user.name}がログインしました")
         except UnicodeEncodeError:
@@ -279,9 +279,6 @@ async def on_message(message):
 
             if message.guild.id == 604945424922574848:
                 await iroha.on_message(client1, message)
-
-            if message.author.id == 723682595799564378 and message.content == "10秒後に魔理沙botを再起動してdisbotc.pyの最新版を適用するよ！":
-                subprocess.run("python3 conoha_reboot.py", shell=True)
 
             with open("custom_commands.json", mode="r", encoding="utf-8") as f:
                 custom_commands_dict = json.load(f)

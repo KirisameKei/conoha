@@ -280,6 +280,9 @@ async def on_message(message):
             if message.guild.id == 604945424922574848:
                 await iroha.on_message(client1, message)
 
+            if message.author.id == 723682595799564378 and message.content == "10秒後に魔理沙botを再起動してdisbotc.pyの最新版を適用するよ！":
+                subprocess.run("python3 conoha_reboot.py", shell=True)
+
             with open("custom_commands.json", mode="r", encoding="utf-8") as f:
                 custom_commands_dict = json.load(f)
 
@@ -288,9 +291,6 @@ async def on_message(message):
                     return
                 custom_commands = custom_commands_dict[f"{message.guild.id}"]
                 await custom_commands_exe.on_message(client1, message, custom_commands)
-
-            if message.author.id == 723682595799564378 and message.content == "10秒後に魔理沙botを再起動してdisbotc.pyの最新版を適用するよ！":
-                subprocess.run("python3 conoha_reboot.py", shell=True)
 
         except (RuntimeError, aiohttp.client_exceptions.ServerDisconnectedError):
             pass

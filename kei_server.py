@@ -153,6 +153,9 @@ async def on_message(client1, message):
     if message.content == "/accept":
         await accept(message)
 
+    if message.content == "/version":
+        await version(message)
+
     if message.content == "/issue":
         await issue_id(message)
 
@@ -1301,6 +1304,15 @@ async def create_new_func(client1, message):
         f.write(custom_commands_json)
 
     await user.send(f"新規コマンド:{trigger}を登録しました。")
+
+
+async def version(message):
+    """
+    バージョンを表示"""
+
+    with open("version.txt", mode="r") as f:
+        version = f.read()
+    await message.channel.send(f"現在のConoHa起動のbotのバージョンは{version}です") 
 
 
 async def issue_id(message):

@@ -3,6 +3,7 @@ import datetime
 import io
 import json
 import os
+import subprocess
 import traceback
 from collections import namedtuple
 
@@ -287,6 +288,9 @@ async def on_message(message):
                     return
                 custom_commands = custom_commands_dict[f"{message.guild.id}"]
                 await custom_commands_exe.on_message(client1, message, custom_commands)
+
+            if message.author.id == 723682595799564378 and message.content == "10秒後に魔理沙botを再起動してdisbotc.pyの最新版を適用するよ！":
+                subprocess.run("python3 conoha_reboot.py", shell=True)
 
         except (RuntimeError, aiohttp.client_exceptions.ServerDisconnectedError):
             pass

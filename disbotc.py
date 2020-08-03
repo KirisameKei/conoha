@@ -66,7 +66,7 @@ async def on_ready():
         await login_notice_ch.send(f"{client1.user.name}がログインしました(from: {where_from})\nversion: {version}")
         try:
             print(f"{client1.user.name}がログインしました")
-        except UnicodeEncodeError:
+        except:
             pass
 
     except:

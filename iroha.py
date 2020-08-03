@@ -31,8 +31,15 @@ async def on_message(client1, message):
             msg = message.embeds[0].author.name
             if msg.endswith("joined the server"):
                 await iroha_server_login(message)
+        if message.channel.id == 605401823561383937 and message.author.id == 606668660853178399 and message.embeds:
+            if message.embeds[0].color == 0xffd700:
         #if message.content.endswith("joined the server for the first time"):
-        #    await iroha_server_first_login(message)
+                await iroha_server_first_login(message)
+
+    if message.content == "/test":
+        ch = client1.get_channel(605401823561383937)
+        msg = await ch.fetch_message(739279189353431101)
+        print(msg.embeds[0].color)
 
 
 async def iroha_server_first_login(message):
@@ -66,6 +73,8 @@ async def iroha_server_login(message):
             total_login[uuid] = 1
         else:
             total_login[uuid] = total_login_days + 1
+            if total_login[uuid] % 50 == 0:
+                await message.channel.send(f"合計ログイン日数{total_login[uuid]}日達成！")
 
         today = datetime.datetime.today().strftime(r"%Y/%m/%d")
         try:
@@ -74,6 +83,8 @@ async def iroha_server_login(message):
             series_login[uuid] = [today, 1]
         else:
             series_login[uuid] = [today, series_login_days + 1]
+            if series_login[uuid] % 50 == 0:
+                await message.channel.send(f"連続ログイン日数{series_login[uuid]}日達成！")
 
         with open("login_record.json", mode="w") as f:
             data_json = json.dumps(data_dict, indent=4)

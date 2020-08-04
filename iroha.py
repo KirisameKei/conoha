@@ -64,6 +64,9 @@ async def iroha_server_login(message):
     if uuid in today_login_list:
         pass
     else:
+        mcid = mcid.replace("\\", "\_")
+        await message.channel.send(f"{mcid}さんおはよー")
+
         today_login_list.append(uuid)
         total_login = data_dict["total"]
         series_login = data_dict["series"]
@@ -83,15 +86,12 @@ async def iroha_server_login(message):
             series_login[uuid] = [today, 1]
         else:
             series_login[uuid] = [today, series_login_days + 1]
-            if series_login[uuid] % 50 == 0:
-                await message.channel.send(f"連続ログイン日数{series_login[uuid]}日達成！")
+            if series_login[uuid][1] % 50 == 0:
+                await message.channel.send(f"連続ログイン日数{series_login[uuid][1]}日達成！")
 
         with open("login_record.json", mode="w") as f:
             data_json = json.dumps(data_dict, indent=4)
             f.write(data_json)
-
-        mcid = mcid.replace("\\", "\_")
-        await message.channel.send(f"{mcid}さんおはよー")
 
 
 def mcid_to_uuid(mcid):

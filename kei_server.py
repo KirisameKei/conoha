@@ -141,7 +141,7 @@ async def on_message(client1, message):
     if message.content.startswith("/mcid"):
         await edit_mcid(message)
 
-    if message.content.startswith("/user_data "):
+    if message.content.startswith("/user_data"):
         await user_data(client1, message)
 
     if message.content.startswith("/ranking "):
@@ -599,6 +599,8 @@ async def user_data(client1, message):
     except ValueError:
         await message.channel.send("不正な引数です")
         return
+    except IndexError:
+        user_id = message.author.id
 
     member = message.guild.get_member(user_id)
     try:

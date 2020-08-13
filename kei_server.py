@@ -229,7 +229,7 @@ async def login_bonus(message):
     msg = msg.replace("マ", "ま").replace("リ", "り").replace("サ", "さ")
     msg = msg.replace("chan", "ちゃん").replace("tyan", "ちゃん").replace("tan", "たん")
     msg = msg.replace("チ", "ち").replace("ャ", "ゃ").replace("タ", "た").replace("ン", "ん")
-    msg = msg.replace("　", "").replace(" ", "").replace("\n", "").replace("゛", "").replace("っ", "")
+    msg = msg.replace("　", "").replace(" ", "").replace("\n", "").replace("゛", "").replace("っ", "").replace("ッ", "").replace("-", "").replace("ー", "")
     NG_word_list = [
         "魔理",
         "まりさ",

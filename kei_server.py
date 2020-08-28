@@ -126,7 +126,7 @@ async def on_message(client1, message):
     #if message.channel.id == 665487669953953804:
     #    await kikaku(message)
 
-    if message.content.startswith("/pt"):
+    if message.content.startswith("/pt "):
         await edit_pt(message)
 
     if message.content.startswith("/ban "):
@@ -421,21 +421,32 @@ async def edit_pt(message):
         await message.channel.send("何様のつもり？")
         return
 
-    try:
-        operation = message.content.split()[1]
-        if operation == "sum":
-            await sum_pt(message)
-            return
-        user_id = int(message.content.split()[2])
-    except ValueError:
-        await message.channel.send("第二引数が不正です\nヒント：/pt␣[add, use, set, crd, sum]␣ID␣(n(n≧0))")
+    operation = message.content.split()[1]
+    if operation == "sum":
+        await sum_pt(message)
         return
-    if not operation == "crd":
-        try:
-            pt = int(message.content.split()[3])
-        except ValueError:
-            await message.channel.send("第三引数が不正です\nヒント：/pt␣[add, use, set, crd, sum]␣ID␣(n(n≧0))")
-            return
+
+    try:
+        user_id = int(message.content.split()[1])
+    except IndexError:
+        await message.channel.send("引数が足りません\nヒント：/pt␣[add, use, set, crd, sum]␣ID␣(n(n≧0))")
+        return
+    except ValueError:
+        await message.channel.send("ユーザーIDは半角数字です")
+        return
+
+    if operation == "crd":
+        await crd_pt(message, user_id)
+        return
+
+    try:
+        pt = int(message.content.split()[3])
+    except IndexError:
+        await message.channel.send("引数が足りません\nヒント：/pt␣[add, use, set, crd, sum]␣ID␣(n(n≧0))")
+        return
+    except ValueError:
+        await message.channel.send("引数が不正です\nヒント：/pt␣[add, use, set, crd, sum]␣ID␣(n(n≧0))")
+        return
 
     if operation == "add":
         await add_pt(message, user_id ,pt)
@@ -443,10 +454,8 @@ async def edit_pt(message):
         await use_pt(message, user_id, pt)
     elif operation == "set":
         await set_pt(message, user_id, pt)
-    elif operation == "crd":
-        await crd_pt(message, user_id)
     else:
-        await message.channel.send("第三引数が不正です\nヒント：`/pt␣[add, use, set, crd]␣ID␣(n(n≧0))`")
+        await message.channel.send("引数が不正です\nヒント：`/pt␣[add, use, set, crd, sum]␣ID␣(n(n≧0))`")
         return
 
 
@@ -1406,12 +1415,12 @@ async def change_date(client1):
     year = datetime.date.today().year
     finished_percentage = round((datetime.date.today().timetuple()[7] - 1) / 365 * 100, 2)
     if datetime.date.today() >= datetime.date(year, 6, 29):
-        year += 1
+        year_seichi = year + 1
     seichisaba_birthday = datetime.date(year, 6, 29)
     how_many_days = str(seichisaba_birthday - datetime.date.today())
     how_many_days = how_many_days.replace(how_many_days[-13:], "")
 
-    text = f"今日の日付: {today}\n{year}年の{finished_percentage}%が終了しました\n整地鯖{year-2016}周年まであと{how_many_days}日です"
+    text = f"今日の日付: {today}\n{year}年の{finished_percentage}%が終了しました\n整地鯖{year_seichi-2016}周年まであと{how_many_days}日です"
     daily_embed = discord.Embed(title=f"日付変更をお知らせします", description=text, color=0xfffffe)
 
     with open("count_message.json", mode="r") as f:

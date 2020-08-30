@@ -427,7 +427,7 @@ async def edit_pt(message):
         return
 
     try:
-        user_id = int(message.content.split()[1])
+        user_id = int(message.content.split()[2])
     except IndexError:
         await message.channel.send("引数が足りません\nヒント：/pt␣[add, use, set, crd, sum]␣ID␣(n(n≧0))")
         return

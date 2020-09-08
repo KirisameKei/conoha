@@ -91,6 +91,7 @@ async def on_member_update(before, after):
             586418283780112385, #int
             671524901655543858, #狩人
             674093583669788684, #侵入者
+            616212704818102275, #ドM
         ]
         with open("user_data.json", mode="r") as f:
             user_data_dict = json.load(f)

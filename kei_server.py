@@ -123,8 +123,8 @@ async def on_message(client1, message):
     if message.channel.id == 634602609017225225:
         await login_bonus(message)
 
-    #if message.channel.id == 665487669953953804:
-    #    await kikaku(message)
+    if message.channel.id == 665487669953953804:
+        await kikaku(message)
 
     if message.content.startswith("/pt "):
         await edit_pt(message)
@@ -1409,24 +1409,31 @@ async def change_date(client1):
     日付変更お知らせ用関数"""
 
     notice_ch = client1.get_channel(710021903879897098)
-    today = datetime.date.today().strftime(r"%Y/%m/%d")
-    yesterday = (datetime.datetime.now() - datetime.timedelta(days=1)).strftime(r"%Y%m%d")
-    before_yesterday = (datetime.datetime.now() - datetime.timedelta(days=2)).strftime(r"%Y%m%d")
-    year = datetime.date.today().year
-    finished_percentage = round((datetime.date.today().timetuple()[7] - 1) / 365 * 100, 2)
-    if datetime.date.today() >= datetime.date(year, 6, 29):
-        year_seichi = year + 1
-    seichisaba_birthday = datetime.date(year, 6, 29)
-    how_many_days = str(seichisaba_birthday - datetime.date.today())
-    how_many_days = how_many_days.replace(how_many_days[-13:], "")
+    today = datetime.date.today()
 
-    text = f"今日の日付: {today}\n{year}年の{finished_percentage}%が終了しました\n整地鯖{year_seichi-2016}周年まであと{how_many_days}日です"
+    today_str = today.strftime(r"%Y/%m/%d")
+    finished_percentage = round((datetime.date.today().timetuple()[7] - 1) / 365 * 100, 2) #正直動きがわからないのとうるう年はバグる
+    if datetime.date.today() >= datetime.date(today.year, 6, 29):
+        year_seichi = today.year + 1
+    else:
+        year_seichi = today.year
+    seichisaba_birthday = datetime.date(year_seichi, 6, 29)
+    how_many_days = str(seichisaba_birthday - today)
+    how_many_days = how_many_days.replace(how_many_days[-13:], "")
+    text = (
+        f"本日の日付: {today_str}\n"
+        f"{today.year}年の{finished_percentage}%が終了しました\n"
+        f"整地鯖{year_seichi-2016}周年まであと{how_many_days}日です"
+    )
+
     daily_embed = discord.Embed(title=f"日付変更をお知らせします", description=text, color=0xfffffe)
 
+    yesterday_str = (today - datetime.timedelta(days=1)).strftime(r"%Y%m%d")
+    before_yesterday_str = (today - datetime.timedelta(days=2)).strftime(r"%Y%m%d")
     with open("count_message.json", mode="r") as f:
         message_dict = json.load(f)
-    yesterday_messages = message_dict[yesterday]
-    before_yesterday_messages = message_dict[before_yesterday]
+    yesterday_messages = message_dict[yesterday_str]
+    before_yesterday_messages = message_dict[before_yesterday_str]
     plus_minus = yesterday_messages - before_yesterday_messages
     if plus_minus > 0:
         plus_minus = f"+{plus_minus}"
@@ -1437,7 +1444,7 @@ async def change_date(client1):
     with open("count_members.json", mode="r") as f:
         members_dict = json.load(f)
     today_members = members_dict[datetime.date.today().strftime(r"%Y%m%d")]
-    yesterday_members = members_dict[yesterday]
+    yesterday_members = members_dict[yesterday_str]
     plus_minus = today_members - yesterday_members
     if plus_minus > 0:
         plus_minus = f"+{plus_minus}"
@@ -1495,6 +1502,12 @@ async def kikaku(message):
             await message.channel.send(f"{message.author.name}さんはまだ企画に参加していません")
         return
 
+    now = datetime.datetime.now()
+    finish_time = datetime.datetime(2020, 11, 18, 22, 0)
+    if now >= finish_time:
+        await message.channel.send("現在企画は行われていません")
+        return
+
     if kikaku_role in message.author.roles:
         await message.channel.send(f"{message.author.name}さんは既に参加しています")
         return
@@ -1511,7 +1524,8 @@ async def kikaku(message):
             break
 
     if not flag:
-        await message.channel.send("そのMCIDは登録されていません")
+        mcid_list = str(mcid_list).replace("_", "\_")
+        await message.channel.send(f"そのMCIDは登録されていません。\n現在登録されているMCID{mcid_list}")
         return
 
     await message.author.add_roles(kikaku_role)
@@ -1524,7 +1538,13 @@ async def kikaku_announcement(client1):
 
     guild = client1.get_guild(585998962050203672)
     kikaku_role = discord.utils.get(guild.roles, id=668021019700756490)
-    tousen = random.choice(kikaku_role.members)
-    embed = discord.Embed(title=":tada:おめでとう:tada:", description=tousen.mention, color=0xffff00)
+    tousen = random.sample(kikaku_role.members, k=2)
+
+    embed = discord.Embed(title=":tada:おめでとう:tada:", description=f"{tousen[0].mention}\n{tousen[1].mention}", color=0xffff00)
     ch = client1.get_channel(586420858512343050)
     await ch.send(content="<@&668021019700756490>", embed=embed)
+    await ch.send(
+        "惜しくも外れてしまった方にも参加賞としてガチャ券2stを進呈します。\n"
+        "「そんなもん取りに来る時間があったら整地したいわ」という方、<#665487669953953804>で`/cancel`を実行してください。\n"
+        "**受け取り期日は2020/11/30までとします。**ただし、事情により期限内に受け取れない場合期限内に言っていただければ対応します。"
+    )

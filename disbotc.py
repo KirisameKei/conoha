@@ -359,7 +359,7 @@ async def change_date():
         await client1.wait_until_ready()
         now = datetime.datetime.now()
 
-        if now.hour == 0 and now.minute == 0:
+        if now.hour == 22 and now.minute == 43:
             await kei_server.count_members(client1)
             await kei_server.change_date(client1)
 
@@ -410,7 +410,7 @@ async def change_login_record():
         unexpected_error()
 change_login_record.start()
 
-
+"""
 @tasks.loop(seconds=60)
 async def kikaku_announcement():
     try:
@@ -421,7 +421,21 @@ async def kikaku_announcement():
             await kei_server.kikaku_announcement(client1)
     except:
         unexpected_error()
+kikaku_announcement.start()"""
+
+
+@tasks.loop(seconds=60)
+async def kikaku_announcement():
+    try:
+        await client1.wait_until_ready()
+        now = datetime.datetime.now()
+
+        if now.month == 11 and now.day == 18 and now.hour == 22 and now.minute == 0:
+            await kei_server.kikaku_announcement(client1)
+    except:
+        unexpected_error()
 kikaku_announcement.start()
+
 
 
 Entry = namedtuple("Entry", "client event token")

@@ -359,7 +359,7 @@ async def change_date():
         await client1.wait_until_ready()
         now = datetime.datetime.now()
 
-        if now.hour == 22 and now.minute == 43:
+        if now.hour == 0 and now.minute == 0:
             await kei_server.count_members(client1)
             await kei_server.change_date(client1)
 

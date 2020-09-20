@@ -876,6 +876,13 @@ async def edit_mcid(message):
     """
     登録されているMCIDを編集(追加/削除)する関数"""
 
+    admin_role = discord.utils.get(message.guild.roles, id=585999549055631408)
+    if not (admin_role in message.author.roles):
+        await message.channel.send("何様のつもり？")
+        doM_role = discord.utils.get(message.guild.roles, id= 616212704818102275)
+        await message.author.add_roles(doM_role)
+        return
+
     try:
         operation = message.content.split()[1]
         user_id = int(message.content.split()[2])

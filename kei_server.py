@@ -242,13 +242,31 @@ async def login_bonus(message):
             await message.channel.send("強制はずれ")
             return
 
-    kouho_list = ["おめでとう！", "はずれ", "はずれ"]
-    touraku = random.choice(kouho_list)
-    if touraku == "はずれ":
-        await message.channel.send(touraku)
-        return
+    with open("word.json", mode="r", encoding="utf-8") as f:
+        word_dict = json.load(f)
 
-    get_pt = random.randint(1,32)
+    flag = False
+    for key in word_dict.keys():
+        if key in message.content:
+            get_pt = word_dict[key]
+            touraku = "指定ワードを引きました！"
+            flag = True
+            break
+
+    if flag:
+        del word_dict[key]
+        with open("word.json", mode="w", encoding="utf-8") as f:
+            word_json = json.dumps(word_dict, indent=4, ensure_ascii=False)
+            f.write(word_json)
+
+    else:
+        kouho_list = ["おめでとう！", "はずれ", "はずれ"]
+        touraku = random.choice(kouho_list)
+        if touraku == "はずれ":
+            await message.channel.send(touraku)
+            return
+
+        get_pt = random.randint(1,32)
 
     with open("user_data.json", mode="r") as f:
         user_data_dict = json.load(f)

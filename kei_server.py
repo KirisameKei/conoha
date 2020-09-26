@@ -226,11 +226,11 @@ async def login_bonus(message):
 
     msg = mojimoji.han_to_zen(mojimoji.zen_to_han(message.content, kana=False), ascii=False) #全角英字を半角に、半角カタカナを全角に
     msg = msg.lower()
+    msg = msg.replace("　", "").replace(" ", "").replace("\n", "").replace("゛", "").replace("っ", "").replace("ッ", "").replace("-", "").replace("ー", "")
     msg = msg.replace("ma", "ま").replace("ri", "り").replace("sa", "さ")
     msg = msg.replace("マ", "ま").replace("リ", "り").replace("サ", "さ")
     msg = msg.replace("chan", "ちゃん").replace("tyan", "ちゃん").replace("tan", "たん")
     msg = msg.replace("チ", "ち").replace("ャ", "ゃ").replace("タ", "た").replace("ン", "ん")
-    msg = msg.replace("　", "").replace(" ", "").replace("\n", "").replace("゛", "").replace("っ", "").replace("ッ", "").replace("-", "").replace("ー", "")
     NG_word_list = [
         "魔理",
         "まりさ",

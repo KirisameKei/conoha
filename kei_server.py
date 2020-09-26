@@ -249,7 +249,7 @@ async def login_bonus(message):
     for key in word_dict.keys():
         if key in message.content:
             get_pt = word_dict[key]
-            touraku = "指定ワードを引きました！"
+            touraku = f"指定ワードを引きました！: {key}"
             flag = True
             break
 

@@ -1148,7 +1148,7 @@ async def ranking_point(client1, message):
         description += f"{i+1}位: {user.name}: {point}\n"
         i += 1
     
-    embed = discord.Embed(title="発言数ランキング", description=f"```\n{description}```", color=0x005500)
+    embed = discord.Embed(title="ポイントランキング", description=f"```\n{description}```", color=0x005500)
     return embed
 
 

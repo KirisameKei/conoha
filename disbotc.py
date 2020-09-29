@@ -272,7 +272,8 @@ async def on_message(message):
                 return
 
             if client1.user in message.mentions:
-                await message.channel.send(where_from)
+                if not message.author.bot:
+                    await message.channel.send(where_from)
 
             if message.guild.id == 585998962050203672 or message.guild.id == 604945424922574848: #けい鯖、いろは鯖なら
                 await server_log.server_log_on_message(client1, message)

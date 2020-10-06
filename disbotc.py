@@ -13,6 +13,7 @@ import requests
 from discord.ext import tasks
 
 import custom_commands_exe
+import emoji_server
 import iroha
 import kei_server
 import muhou
@@ -338,6 +339,16 @@ async def on_member_update(before, after):
     try:
         if before.guild.id == 585998962050203672:
             await kei_server.on_member_update(before, after)
+    except:
+        unexpected_error()
+
+
+@client1.event
+async def on_guild_emojis_update(guild, before, after):
+    try:
+        if guild.id == 735632039050477649:
+            await emoji_server.emoji_update(client1, guild, before, after)
+
     except:
         unexpected_error()
 

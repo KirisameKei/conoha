@@ -9,10 +9,10 @@ async def emoji_update(client1, guild, before, after):
     """
     絵文字のアップデートイベントがあったら反応する"""
 
-    defferent = list(set(before) ^ set(after))
+    different = list(set(before) ^ set(after))
     notice_ch = client1.get_channel(762654494987124756)
 
-    if defferent == []: #名前の変更なら
+    if different == []: #名前の変更なら
         #変更のあった絵文字を探す
         for before_emoji in before:
             after_emoji = after[before.index(before_emoji)]
@@ -37,7 +37,7 @@ async def emoji_update(client1, guild, before, after):
 
     else:
         if len(before) < len(after): #作成なら
-            emoji = await guild.fetch_emoji(defferent[0].id)
+            emoji = await guild.fetch_emoji(different[0].id)
             emoji_name = emoji.name.replace("_", "\_")
             user = client1.get_user(emoji.user.id)
 
@@ -54,7 +54,7 @@ async def emoji_update(client1, guild, before, after):
             emoji_ = Image.open(image)
             emoji_.save(f"./emojis/{emoji.name}.png")
 
-            if defferent[0].animated: #アニメ絵文字なら
+            if different[0].animated: #アニメ絵文字なら
                 description = f"{user}によりアニメ絵文字: **:{emoji_name}:**が作成されました"
             else:
                 description = f"{user}により**:{emoji_name}:**({emoji})が作成されました"
@@ -66,14 +66,14 @@ async def emoji_update(client1, guild, before, after):
             await notice_ch.send(embed=embed)
 
         elif len(before) > len(after): #削除なら
-            emoji_name = defferent[0].name.replace("_", "\_")
+            emoji_name = different[0].name.replace("_", "\_")
 
             with open("emoji_data.json", mode="r", encoding="utf-8") as f:
                 emoji_data_dict = json.load(f)
 
-            created_user_id = emoji_data_dict[f"{defferent[0].id}"]
+            created_user_id = emoji_data_dict[f"{different[0].id}"]
             created_user = await client1.fetch_user(created_user_id)
-            del emoji_data_dict[f"{defferent[0].id}"]
+            del emoji_data_dict[f"{different[0].id}"]
 
             with open("emoji_data.json", mode="w", encoding="utf-8") as f:
                 emoji_data_json = json.dumps(emoji_data_dict, indent=4)

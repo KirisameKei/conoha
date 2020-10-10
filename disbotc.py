@@ -425,6 +425,20 @@ async def change_login_record():
         unexpected_error()
 change_login_record.start()
 
+@tasks.loop(seconds=60)
+async def record_story():
+    try:
+        await client1.wait_until_ready()
+        now = datetime.datetime.now()
+
+        if now.weekday == 0 and now.hour == 3 and now.minute == 30:
+            await kei_server.record_story(client1)
+
+    except:
+        unexpected_error()
+record_story.start()
+
+
 """
 @tasks.loop(seconds=60)
 async def kikaku_announcement():

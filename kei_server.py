@@ -148,6 +148,12 @@ async def on_message(client1, message):
     if message.content.startswith("/ranking "):
         await ranking(client1, message)
 
+    if message.channel.id == 762546731417731073:
+        await story(message)
+
+    if message.channel.id == 762546959138816070:
+        await story_secret(message)
+
     if message.content == "/marichan_invite":
         await marichan_invite(message)
 
@@ -1187,6 +1193,90 @@ async def ranking(client1, message):
         await message.channel.send("引数が不正です。\nヒント: `/ranking␣[point, speak]`")
         return
     await message.channel.send(embed=embed)
+
+
+async def story(message):
+    """
+    物語作ろうぜ"""
+
+    if message.author.bot:
+        return
+
+    if not message.content:
+        await message.delete()
+        return
+
+    if message.content.startswith("/"):
+        return
+
+    with open("story.txt", mode="a", encoding="utf-8") as f:
+        f.write(f"{message.content}\n")
+
+
+async def story_secret(message):
+    """
+    物語作ろうぜ
+    でも前々文は見えないぜ"""
+
+    if message.author.bot:
+        return
+
+    if not message.content:
+        await message.delete()
+        return
+
+    if message.content.startswith("/"):
+        return
+
+    with open("story_secret.txt", mode="a", encoding="utf-8") as f:
+        f.write(f"{message.content}\n")
+
+    i = 0
+    async for msg in message.channel.history(limit=2):
+        if i == 1:
+            await msg.delete()
+            break
+        else:
+            i += 1
+
+
+async def record_story(client1):
+    """
+    毎週月曜日の朝3:30に物語を記録"""
+
+    record_ch = client1.get_channel(762553442040021032)
+
+    with open("story.txt", mode="r", encoding="utf-8") as f:
+        story = f.read()
+
+    while True:
+        if len(story) > 2000:
+            embed = discord.Embed(description=story[:2000], color=0x00ffff)
+            await record_ch.send(embed=embed)
+            story = story[2000:]
+        else:
+            embed = discord.Embed(description=story, color=0x00ffff)
+            await record_ch.send(embed=embed)
+            break
+
+    with open("story_secret.txt", mode="r", encoding="utf-8") as f:
+        story = f.read()
+
+    while True:
+        if len(story) > 2000:
+            embed = discord.Embed(description=story[:2000], color=0xaa00aa)
+            await record_ch.send(embed=embed)
+            story = story[2000:]
+        else:
+            embed = discord.Embed(description=story, color=0xaa00aa)
+            await record_ch.send(embed=embed)
+            break
+
+    with open("story.txt", mode="w", encoding="utf-8") as f:
+        f.write("")
+
+    with open("story_secret.txt", mode="w", encoding="utf-8") as f:
+        f.write("")
 
 
 async def create_new_func(client1, message):

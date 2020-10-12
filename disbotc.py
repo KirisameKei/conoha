@@ -25,11 +25,11 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 try:
     import tokens_ConoHa
 except ModuleNotFoundError: #けいローカル or heroku
-    discord_bot_token_1 = os.getenv("discord_bot_token_1")
+    discord_bot_token_1 = os.getenv("discord_bot_token_2")
     where_from = os.getenv("where_from")
     error_notice_webhook_url = os.getenv("error_notice_webhook")
 else: #ConoHa
-    discord_bot_token_1 = tokens_ConoHa.discord_bot_token_1
+    discord_bot_token_1 = tokens_ConoHa.discord_bot_token_2
     where_from = tokens_ConoHa.where_from
     error_notice_webhook_url = tokens_ConoHa.error_notice_webhook
 
@@ -431,7 +431,7 @@ async def record_story():
         await client1.wait_until_ready()
         now = datetime.datetime.now()
 
-        if now.weekday == 0 and now.hour == 3 and now.minute == 30:
+        if now.weekday() == 0 and now.hour == 3 and now.minute == 15:
             await kei_server.record_story(client1)
 
     except:

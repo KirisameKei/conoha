@@ -1231,13 +1231,10 @@ async def story_secret(message):
     with open("story_secret.txt", mode="a", encoding="utf-8") as f:
         f.write(f"{message.content}\n")
 
-    i = 0
-    async for msg in message.channel.history(limit=2):
-        if i == 1:
-            await msg.delete()
-            break
-        else:
-            i += 1
+    embed = discord.Embed(description=message.content)
+    embed.set_author(name=message.author.name, icon_url=message.author.avatar_url_as(format="png"))
+    await message.channel.purge()
+    await message.channel.send(embed=embed)
 
 
 async def record_story(client1):

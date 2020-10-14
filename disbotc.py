@@ -22,16 +22,9 @@ import server_log
 client1 = discord.Client()
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-try:
-    import tokens_ConoHa
-except ModuleNotFoundError: #けいローカル or heroku
-    discord_bot_token_1 = os.getenv("discord_bot_token_2")
-    where_from = os.getenv("where_from")
-    error_notice_webhook_url = os.getenv("error_notice_webhook")
-else: #ConoHa
-    discord_bot_token_1 = tokens_ConoHa.discord_bot_token_2
-    where_from = tokens_ConoHa.where_from
-    error_notice_webhook_url = tokens_ConoHa.error_notice_webhook
+discord_bot_token_1 = os.getenv("discord_bot_token_1")
+where_from = os.getenv("where_from")
+error_notice_webhook_url = os.getenv("error_notice_webhook")
 
 
 def unexpected_error():
@@ -65,10 +58,6 @@ async def on_ready():
         with open("version.txt") as f:
             version = f.read()
         await login_notice_ch.send(f"{client1.user.name}がログインしました(from: {where_from})\nversion: {version}")
-        try:
-            print(f"{client1.user.name}がログインしました")
-        except:
-            pass
 
     except:
         unexpected_error()

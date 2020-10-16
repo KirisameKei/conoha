@@ -10,7 +10,7 @@ async def on_member_join(client1, member):
     いろは鯖に新規が来た時用役職
     user_data_dict[f"{member.id}"][ban]がtrueならキックする"""
 
-    with open("user_data.json", mode="r") as f:
+    with open("./datas/user_data.json", mode="r") as f:
         user_data_dict = json.load(f)
 
     try:
@@ -57,7 +57,7 @@ async def iroha_server_login(message):
 
     mcid = message.embeds[0].author.name.split()[0].replace("\\","")
     uuid = mcid_to_uuid(mcid)
-    with open("login_record.json", mode="r") as f:
+    with open("./datas/login_record.json", mode="r") as f:
         data_dict = json.load(f)
     
     today_login_list = data_dict["today"]
@@ -89,7 +89,7 @@ async def iroha_server_login(message):
             if series_login[uuid][1] % 50 == 0:
                 await message.channel.send(f"連続ログイン日数{series_login[uuid][1]}日達成！")
 
-        with open("login_record.json", mode="w") as f:
+        with open("./datas/login_record.json", mode="w") as f:
             data_json = json.dumps(data_dict, indent=4)
             f.write(data_json)
 
@@ -136,7 +136,7 @@ async def delete_login_record():
     today = datetime.date.today()
     before_yesterday = today - datetime.timedelta(days=2)
 
-    with open("login_record.json", mode="r") as f:
+    with open("./datas/login_record.json", mode="r") as f:
         data_dict = json.load(f)
 
     data_dict["today"].clear()
@@ -151,7 +151,7 @@ async def delete_login_record():
     for uuid in delete_uuid_list:
         del data_dict["series"][uuid]
 
-    with open("login_record.json", mode="w") as f:
+    with open("./datas/login_record.json", mode="w") as f:
         data_json = json.dumps(data_dict, indent=4)
         f.write(data_json)
 
@@ -160,7 +160,7 @@ async def change_login_record(client1):
     send_ch = client1.get_channel(690032563028230150)
     await send_ch.purge()
 
-    with open("login_record.json", mode="r") as f:
+    with open("./datas/login_record.json", mode="r") as f:
         data_dict = json.load(f)
 
     total_login_dict = data_dict["total"]

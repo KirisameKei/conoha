@@ -22,7 +22,7 @@ async def emoji_update(client1, guild, before, after):
         before_emoji_name = before_emoji.name.replace("_", "\_")
         after_emoji_name = after_emoji.name.replace("_", "\_")
 
-        with open("emoji_data.json", mode="r", encoding="utf-8") as f:
+        with open("./datas/emoji_data.json", mode="r", encoding="utf-8") as f:
             emoji_data_dict = json.load(f)
 
         created_user_id = emoji_data_dict[f"{before_emoji.id}"]
@@ -41,10 +41,10 @@ async def emoji_update(client1, guild, before, after):
             emoji_name = emoji.name.replace("_", "\_")
             user = client1.get_user(emoji.user.id)
 
-            with open("emoji_data.json", mode="r", encoding="utf-8") as f:
+            with open("./datas/emoji_data.json", mode="r", encoding="utf-8") as f:
                 emoji_data_dict = json.load(f)
             emoji_data_dict[f"{emoji.id}"] = user.id
-            with open("emoji_data.json", mode="w", encoding="utf-8") as f:
+            with open("./datas/emoji_data.json", mode="w", encoding="utf-8") as f:
                 emoji_data_json = json.dumps(emoji_data_dict, indent=4)
                 f.write(emoji_data_json)
 
@@ -68,14 +68,14 @@ async def emoji_update(client1, guild, before, after):
         elif len(before) > len(after): #削除なら
             emoji_name = different[0].name.replace("_", "\_")
 
-            with open("emoji_data.json", mode="r", encoding="utf-8") as f:
+            with open("./datas/emoji_data.json", mode="r", encoding="utf-8") as f:
                 emoji_data_dict = json.load(f)
 
             created_user_id = emoji_data_dict[f"{different[0].id}"]
             created_user = await client1.fetch_user(created_user_id)
             del emoji_data_dict[f"{different[0].id}"]
 
-            with open("emoji_data.json", mode="w", encoding="utf-8") as f:
+            with open("./datas/emoji_data.json", mode="w", encoding="utf-8") as f:
                 emoji_data_json = json.dumps(emoji_data_dict, indent=4)
                 f.write(emoji_data_json)
 

@@ -7,7 +7,7 @@ async def server_log_on_message(client1, message):
     """
     けい鯖、HJK、いろは鯖でメッセージが投稿されたときの関数"""
 
-    with open("channels_id.json", mode="r") as f:
+    with open("./datas/channels_id.json", mode="r") as f:
         channels_id_dict = json.load(f)
     try:
         log_channel_id = channels_id_dict[f"{message.channel.id}"]
@@ -37,7 +37,7 @@ async def server_log_on_message_update(client1, before, after):
     """
     けい鯖、HJK、いろは鯖でメッセージが編集されたときの関数"""
 
-    with open("channels_id.json", mode="r") as f:
+    with open("./datas/channels_id.json", mode="r") as f:
         channels_id_dict = json.load(f)
     try:
         log_channel_id = channels_id_dict[f"{before.channel.id}"]
@@ -82,7 +82,7 @@ async def server_log_on_message_delete(client1, message):
     """
     けい鯖、HJK、いろは鯖でメッセージが削除されたときの関数"""
 
-    with open("channels_id.json", mode="r") as f:
+    with open("./datas/channels_id.json", mode="r") as f:
         channels_id_dict = json.load(f)
     try:
         log_channel_id = channels_id_dict[f"{message.channel.id}"]

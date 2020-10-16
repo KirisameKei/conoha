@@ -7,7 +7,7 @@ async def on_member_join(client1, member):
     無法地帯に新規が来た時用役職
     user_data_dict[f"{member.id}"][ban]がtrueならキックする"""
 
-    with open("user_data.json", mode="r") as f:
+    with open("./datas/user_data.json", mode="r") as f:
         user_data_dict = json.load(f)
 
     try:

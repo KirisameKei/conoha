@@ -5,6 +5,7 @@ import math
 import os
 import random
 import re
+import shutil
 import string
 
 import bs4
@@ -18,14 +19,14 @@ async def on_member_join(client1, member):
     以前に入っていたかを検知し入っていなければ初期データを設定する
     新規役職を付与する"""
 
-    with open("user_data.json", mode="r") as f:
+    with open("./datas/user_data.json", mode="r") as f:
         user_data_dict = json.load(f)
 
     try:
         user_data = user_data_dict[f"{member.id}"]
     except KeyError:
         user_data_dict[f"{member.id}"] = {"ban": False, "role": [], "mcid": [], "point": 0, "speak": 0}
-        with open("user_data.json", mode="w") as f:
+        with open("./datas/user_data.json", mode="w") as f:
             user_data_json = json.dumps(user_data_dict, indent=4)
             f.write(user_data_json)
     else:
@@ -63,7 +64,7 @@ async def on_member_remove(client1, member):
     """
     けい鯖で脱退イベントが発生した時用の関数"""
 
-    with open("user_data.json", mode="r") as f:
+    with open("./datas/user_data.json", mode="r") as f:
         user_data_dict = json.load(f)
 
     try:
@@ -73,7 +74,7 @@ async def on_member_remove(client1, member):
     except KeyError:
         user_data_dict[f"{member.id}"] = {"ban": False, "role": [], "mcid": [], "point": 0, "speak": 0}
 
-    with open("user_data.json", mode="w") as f:
+    with open("./datas/user_data.json", mode="w") as f:
         user_data_json = json.dumps(user_data_dict, indent=4)
         f.write(user_data_json)
 
@@ -93,7 +94,7 @@ async def on_member_update(before, after):
             674093583669788684, #侵入者
             616212704818102275, #ドM
         ]
-        with open("user_data.json", mode="r") as f:
+        with open("./datas/user_data.json", mode="r") as f:
             user_data_dict = json.load(f)
         try:
             role_id_list = user_data_dict[f"{before.id}"]["role"]
@@ -106,7 +107,7 @@ async def on_member_update(before, after):
             if role.id in leave_role_list:
                 role_id_list.append(role.id)
 
-        with open("user_data.json", mode="w") as f:
+        with open("./datas/user_data.json", mode="w") as f:
             user_data_json = json.dumps(user_data_dict, indent=4)
             f.write(user_data_json)
 
@@ -163,6 +164,9 @@ async def on_message(client1, message):
     if message.content == "/version":
         await version(message)
 
+    if message.content == "/datas":
+        await send_zip_data(message)
+
     if message.content == "/issue":
         await issue_id(message)
 
@@ -174,7 +178,7 @@ async def count_message(message):
     """
     投稿されたメッセージ数を数える"""
 
-    with open("count_message.json", mode="r") as f:
+    with open("./datas/count_message.json", mode="r") as f:
         counter_dict = json.load(f)
 
     today = datetime.date.today().strftime(r"%Y%m%d")
@@ -183,14 +187,14 @@ async def count_message(message):
     except KeyError:
         counter_dict[today] = 1
 
-    with open("count_message.json", mode="w") as f:
+    with open("./datas/count_message.json", mode="w") as f:
         counter_json = json.dumps(counter_dict, indent=4)
         f.write(counter_json)
 
     if message.channel.id == 586075792950296576:
         return
 
-    with open("user_data.json", mode="r") as f:
+    with open("./datas/user_data.json", mode="r") as f:
         user_data_dict = json.load(f)
 
     try:
@@ -218,7 +222,7 @@ async def count_message(message):
         if user_data_dict[f"{message.author.id}"]["speak"] >= 1000:
             await message.author.add_roles(regular_member_1_role)
 
-    with open("user_data.json", mode="w") as f:
+    with open("./datas/user_data.json", mode="w") as f:
         user_data_json = json.dumps(user_data_dict, indent=4)
         f.write(user_data_json)
 
@@ -248,7 +252,7 @@ async def login_bonus(message):
             await message.channel.send("強制はずれ")
             return
 
-    with open("word.json", mode="r", encoding="utf-8") as f:
+    with open("./datas/word.json", mode="r", encoding="utf-8") as f:
         word_dict = json.load(f)
 
     flag = False
@@ -261,7 +265,7 @@ async def login_bonus(message):
 
     if flag:
         del word_dict[key]
-        with open("word.json", mode="w", encoding="utf-8") as f:
+        with open("./datas/word.json", mode="w", encoding="utf-8") as f:
             word_json = json.dumps(word_dict, indent=4, ensure_ascii=False)
             f.write(word_json)
 
@@ -274,7 +278,7 @@ async def login_bonus(message):
 
         get_pt = random.randint(1,32)
 
-    with open("user_data.json", mode="r") as f:
+    with open("./datas/user_data.json", mode="r") as f:
         user_data_dict = json.load(f)
     
     try:
@@ -284,7 +288,7 @@ async def login_bonus(message):
         had_pt = user_data_dict[f"{message.author.id}"]["point"]
 
     user_data_dict[f"{message.author.id}"]["point"] = had_pt + get_pt
-    with open("user_data.json", mode="w") as f:
+    with open("./datas/user_data.json", mode="w") as f:
         user_data_json = json.dumps(user_data_dict, indent=4)
         f.write(user_data_json)
 
@@ -302,7 +306,7 @@ async def add_pt(message, user_id, pt):
         await message.channel.send("そんな人この鯖にいません")
         return
 
-    with open("user_data.json", mode="r") as f:
+    with open("./datas/user_data.json", mode="r") as f:
         user_data_dict = json.load(f)
 
     try:
@@ -312,7 +316,7 @@ async def add_pt(message, user_id, pt):
         had_pt = user_data_dict[f"{member.id}"]["point"]
 
     user_data_dict[f"{member.id}"]["point"] = had_pt + pt
-    with open("user_data.json", mode="w") as f:
+    with open("./datas/user_data.json", mode="w") as f:
         user_data_json = json.dumps(user_data_dict, indent=4)
         f.write(user_data_json)
 
@@ -330,7 +334,7 @@ async def use_pt(message, user_id, pt):
         await message.channel.send("そんな人この鯖にいません")
         return
 
-    with open("user_data.json", mode="r") as f:
+    with open("./datas/user_data.json", mode="r") as f:
         user_data_dict = json.load(f)
 
     try:
@@ -344,7 +348,7 @@ async def use_pt(message, user_id, pt):
         return
 
     user_data_dict[f"{member.id}"]["point"] = had_pt - pt
-    with open("user_data.json", mode="w") as f:
+    with open("./datas/user_data.json", mode="w") as f:
         user_data_json = json.dumps(user_data_dict, indent=4)
         f.write(user_data_json)
 
@@ -362,7 +366,7 @@ async def set_pt(message, user_id, pt):
         await message.channel.send("そんな人この鯖にいません")
         return
 
-    with open("user_data.json", mode="r") as f:
+    with open("./datas/user_data.json", mode="r") as f:
         user_data_dict = json.load(f)
 
     try:
@@ -372,7 +376,7 @@ async def set_pt(message, user_id, pt):
         had_pt = user_data_dict[f"{member.id}"]["point"]
 
     user_data_dict[f"{member.id}"]["point"] = pt
-    with open("user_data.json", mode="w") as f:
+    with open("./datas/user_data.json", mode="w") as f:
         user_data_json = json.dumps(user_data_dict, indent=4)
         f.write(user_data_json)
 
@@ -402,7 +406,7 @@ async def crd_pt(message, user_id):
 
     get_pt = random.randint(1,32)
     
-    with open("user_data.json", mode="r") as f:
+    with open("./datas/user_data.json", mode="r") as f:
         user_data_dict = json.load(f)
     
     try:
@@ -412,7 +416,7 @@ async def crd_pt(message, user_id):
         had_pt = user_data_dict[f"{member.id}"]["point"]
 
     user_data_dict[f"{member.id}"]["point"] = had_pt + get_pt
-    with open("user_data.json", mode="w") as f:
+    with open("./datas/user_data.json", mode="w") as f:
         user_data_json = json.dumps(user_data_dict, indent=4)
         f.write(user_data_json)
     
@@ -423,7 +427,7 @@ async def sum_pt(message):
     """
     現在のptの合計を求める関数"""
 
-    with open("user_data.json", mode="r") as f:
+    with open("./datas/user_data.json", mode="r") as f:
         user_data_dict = json.load(f)
 
     pt = 0
@@ -504,7 +508,7 @@ async def before_ban(client1, message):
         await message.channel.send("IDが間違っています")
         return
 
-    with open("user_data.json", mode="r") as f:
+    with open("./datas/user_data.json", mode="r") as f:
         user_data_dict = json.load(f)
 
     try:
@@ -542,7 +546,7 @@ async def before_ban(client1, message):
 
         user_data["ban"] = True
 
-        with open("user_data.json", mode="w") as f:
+        with open("./datas/user_data.json", mode="w") as f:
             user_data_json = json.dumps(user_data_dict, indent=4)
             f.write(user_data_json)
 
@@ -569,7 +573,7 @@ async def unban(client1, message):
         await message.channel.send("IDが間違っています")
         return
 
-    with open("user_data.json", mode="r") as f:
+    with open("./datas/user_data.json", mode="r") as f:
         user_data_dict = json.load(f)
 
     try:
@@ -601,7 +605,7 @@ async def unban(client1, message):
             return
 
         user_data_dict[f"{user_id}"]["ban"] = False
-        with open("user_data.json", mode="w") as f:
+        with open("./datas/user_data.json", mode="w") as f:
             user_data_json = json.dumps(user_data_dict, indent=4)
             f.write(user_data_json)
 
@@ -612,7 +616,7 @@ async def mypt(message):
     """
     自分のpt保有量を確認する関数"""
 
-    with open("user_data.json", mode="r") as f:
+    with open("./datas/user_data.json", mode="r") as f:
         user_data_dict = json.load(f)
 
     try:
@@ -643,7 +647,7 @@ async def user_data(client1, message):
         await message.channel.send("そんな人この鯖にいません")
         return
 
-    with open("user_data.json", mode="r") as f:
+    with open("./datas/user_data.json", mode="r") as f:
         user_data_dict = json.load(f)
 
     user_data = user_data_dict[f"{member.id}"]
@@ -715,7 +719,7 @@ def check_mcid_yet(mcid):
     申請されたMCIDが未登録MCIDかチェックする
     boolを返す"""
 
-    with open("user_data.json", mode="r") as f:
+    with open("./datas/user_data.json", mode="r") as f:
         user_data_dict = json.load(f)
 
     for user_id in user_data_dict:
@@ -785,7 +789,7 @@ async def new_mcid(client1, message, message_content):
     if len(right_mcid_logined_list) == 0:
         return
 
-    with open("user_data.json", mode="r") as f:
+    with open("./datas/user_data.json", mode="r") as f:
         user_data_dict = json.load(f)
 
     try:
@@ -816,7 +820,7 @@ async def new_mcid(client1, message, message_content):
             if str(reaction.emoji) == "🇦":
                 user_data["mcid"] = mcid_list + right_mcid_logined_list
 
-    with open("user_data.json", mode="w") as f:
+    with open("./datas/user_data.json", mode="w") as f:
         user_data_json = json.dumps(user_data_dict, indent=4)
         f.write(user_data_json)
 
@@ -864,7 +868,7 @@ async def change_mcid(message, message_content):
 **__もしこれがバグならけいにお知らせください。")
         return
 
-    with open("user_data.json", mode="r") as f:
+    with open("./datas/user_data.json", mode="r") as f:
         user_data_dict = json.load(f)
 
     try:
@@ -887,7 +891,7 @@ async def change_mcid(message, message_content):
         await message.channel.send(f"**{before_mcid}**は登録されていません。現在あなたが登録しているMCID:\n{mcid_list}")
         return
 
-    with open("user_data.json", mode="w") as f:
+    with open("./datas/user_data.json", mode="w") as f:
         user_data_json = json.dumps(user_data_dict, indent=4)
         f.write(user_data_json)
 
@@ -944,7 +948,7 @@ async def set_mcid(message, user_id , mcid):
         await message.channel.send("整地鯖で認識されていないMCIDです")
         return
 
-    with open("user_data.json", mode="r") as f:
+    with open("./datas/user_data.json", mode="r") as f:
         user_data_dict = json.load(f)
 
     try:
@@ -956,7 +960,7 @@ async def set_mcid(message, user_id , mcid):
 
     mcid_list.append(mcid)
 
-    with open("user_data.json", mode="w") as f:
+    with open("./datas/user_data.json", mode="w") as f:
         user_data_json = json.dumps(user_data_dict, indent=4)
         f.write(user_data_json)
 
@@ -969,7 +973,7 @@ async def del_mcid(message, user_id, mcid):
     """
     指定ユーザーの登録されているMCIDから第4引数のMCIDを削除する関数"""
 
-    with open("user_data.json", mode="r") as f:
+    with open("./datas/user_data.json", mode="r") as f:
         user_data_dict = json.load(f)
 
     try:
@@ -987,7 +991,7 @@ async def del_mcid(message, user_id, mcid):
         await message.channel.send(f"{member_name}は{mcid}というMCIDを登録していません")
         return
 
-    with open("user_data.json", mode="w") as f:
+    with open("./datas/user_data.json", mode="w") as f:
         user_data_json = json.dumps(user_data_dict, indent=4)
         f.write(user_data_json)
 
@@ -1001,7 +1005,7 @@ async def check_mcid_exist_now(client1):
     現在登録されているMCIDが存在するかをチェックする関数
     存在しない場合そのMCIDを登録している人にメンションを飛ばす"""
 
-    with open("user_data.json", mode="r") as f:
+    with open("./datas/user_data.json", mode="r") as f:
         user_data_dict = json.load(f)
 
     alart_msg = ""
@@ -1141,7 +1145,7 @@ async def ranking_point(client1, message):
     ポイントランキング
     embedを返す"""
 
-    with open("user_data.json", mode="r") as f:
+    with open("./datas/user_data.json", mode="r") as f:
         user_data_dict = json.load(f)
 
     description = ""
@@ -1163,7 +1167,7 @@ async def ranking_speak(client1, message):
     発言数ランキング
     embedを返す"""
 
-    with open("user_data.json", mode="r") as f:
+    with open("./datas/user_data.json", mode="r") as f:
         user_data_dict = json.load(f)
 
     description = ""
@@ -1209,7 +1213,7 @@ async def story(message):
     if message.content.startswith("/"):
         return
 
-    with open("story.txt", mode="a", encoding="utf-8") as f:
+    with open("./datas/story.txt", mode="a", encoding="utf-8") as f:
         f.write(f"{message.content}\n")
 
 
@@ -1228,7 +1232,7 @@ async def story_secret(message):
     if message.content.startswith("/"):
         return
 
-    with open("story_secret.txt", mode="a", encoding="utf-8") as f:
+    with open("./datas/story_secret.txt", mode="a", encoding="utf-8") as f:
         f.write(f"{message.content}\n")
 
     embed = discord.Embed(description=message.content)
@@ -1243,7 +1247,7 @@ async def record_story(client1):
 
     record_ch = client1.get_channel(762553442040021032)
 
-    with open("story.txt", mode="r", encoding="utf-8") as f:
+    with open("./datas/story.txt", mode="r", encoding="utf-8") as f:
         story = f.read()
 
     while True:
@@ -1256,7 +1260,7 @@ async def record_story(client1):
             await record_ch.send(embed=embed)
             break
 
-    with open("story_secret.txt", mode="r", encoding="utf-8") as f:
+    with open("./datas/story_secret.txt", mode="r", encoding="utf-8") as f:
         story = f.read()
 
     while True:
@@ -1269,10 +1273,10 @@ async def record_story(client1):
             await record_ch.send(embed=embed)
             break
 
-    with open("story.txt", mode="w", encoding="utf-8") as f:
+    with open("./datas/story.txt", mode="w", encoding="utf-8") as f:
         f.write("")
 
-    with open("story_secret.txt", mode="w", encoding="utf-8") as f:
+    with open("./datas/story_secret.txt", mode="w", encoding="utf-8") as f:
         f.write("")
 
 
@@ -1403,7 +1407,7 @@ async def create_new_func(client1, message):
                 return
             remove_role_dict["remove_role"].append(role_id)
 
-    with open("custom_commands.json", mode="r", encoding="utf-8") as f:
+    with open("./datas/custom_commands.json", mode="r", encoding="utf-8") as f:
         custom_commands_dict = json.load(f)
 
     try:
@@ -1423,7 +1427,7 @@ async def create_new_func(client1, message):
 
     custom_commands[trigger] = command
 
-    with open("custom_commands.json", mode="w", encoding="utf-8") as f:
+    with open("./datas/custom_commands.json", mode="w", encoding="utf-8") as f:
         custom_commands_json = json.dumps(custom_commands_dict, indent=4, ensure_ascii=False)
         f.write(custom_commands_json)
 
@@ -1434,9 +1438,24 @@ async def version(message):
     """
     バージョンを表示"""
 
-    with open("version.txt", mode="r") as f:
+    with open("./datas/version.txt", mode="r") as f:
         version = f.read()
     await message.channel.send(f"現在のConoHa起動のbotのバージョンは{version}です") 
+
+
+async def send_zip_data(message):
+    """
+    データ類を全部引っ張ってくる関数"""
+
+    if not message.author.id == 523303776120209408:
+        await message.channel.send("何様のつもり？")
+        doM_role = discord.utils.get(message.guild.roles, id= 616212704818102275)
+        await message.author.add_roles(doM_role)
+        return
+
+    shutil.make_archive("datas", format="zip", base_dir="./datas")
+    f = discord.File("datas.zip")
+    await message.author.send(file=f)
 
 
 async def issue_id(message):
@@ -1507,12 +1526,12 @@ async def count_members(client1):
     """
     サーバにいる人数を数えて記録する関数"""
 
-    with open("count_members.json", mode="r") as f:
+    with open("./datas/count_members.json", mode="r") as f:
         members_dict = json.load(f)
     today = datetime.date.today().strftime(r"%Y%m%d")
     guild = client1.get_guild(585998962050203672)
     members_dict[today] = len(guild.members)
-    with open("count_members.json", mode="w") as f:
+    with open("./datas/count_members.json", mode="w") as f:
         members_json = json.dumps(members_dict, indent=4)
         f.write(members_json)
 
@@ -1543,7 +1562,7 @@ async def change_date(client1):
 
     yesterday_str = (today - datetime.timedelta(days=1)).strftime(r"%Y%m%d")
     before_yesterday_str = (today - datetime.timedelta(days=2)).strftime(r"%Y%m%d")
-    with open("count_message.json", mode="r") as f:
+    with open("./datas/count_message.json", mode="r") as f:
         message_dict = json.load(f)
     yesterday_messages = message_dict[yesterday_str]
     before_yesterday_messages = message_dict[before_yesterday_str]
@@ -1554,7 +1573,7 @@ async def change_date(client1):
         plus_minus = f"{plus_minus}"
     daily_embed.add_field(name="messages", value=f"昨日の発言数: {yesterday_messages}\n前日比: {plus_minus}", inline=True)
 
-    with open("count_members.json", mode="r") as f:
+    with open("./datas/count_members.json", mode="r") as f:
         members_dict = json.load(f)
     today_members = members_dict[datetime.date.today().strftime(r"%Y%m%d")]
     yesterday_members = members_dict[yesterday_str]
@@ -1572,7 +1591,7 @@ async def add_interest(client1):
     """
     保有ptに応じた利子を付与する関数"""
 
-    with open("user_data.json", mode="r") as f:
+    with open("./datas/user_data.json", mode="r") as f:
         user_data_dict = json.load(f)
 
     notice_ch = client1.get_channel(585999375952642067)
@@ -1592,7 +1611,7 @@ async def add_interest(client1):
         after_pt = math.floor(point*rishi)
         user_data_dict[user_id]["point"] = after_pt
 
-    with open("user_data.json", mode="w") as f:
+    with open("./datas/user_data.json", mode="w") as f:
         user_data_json = json.dumps(user_data_dict, indent=4)
         f.write(user_data_json)
 
@@ -1626,7 +1645,7 @@ async def kikaku(message):
         return
 
     mcid = message.content.replace("\_", "_")
-    with open("user_data.json", mode="r") as f:
+    with open("./datas/user_data.json", mode="r") as f:
         user_data_dict = json.load(f)
 
     mcid_list = user_data_dict[f"{message.author.id}"]["mcid"]

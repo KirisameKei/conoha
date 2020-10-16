@@ -55,7 +55,7 @@ def unexpected_error():
 async def on_ready():
     try:
         login_notice_ch = client1.get_channel(595072269483638785)
-        with open("version.txt") as f:
+        with open("./datas/version.txt") as f:
             version = f.read()
         await login_notice_ch.send(f"{client1.user.name}がログインしました(from: {where_from})\nversion: {version}")
 
@@ -85,7 +85,7 @@ async def on_guild_channel_create(channel):
         if type(channel) == discord.CategoryChannel or type(channel) == discord.VoiceChannel:
             return
         if channel.guild.id == 585998962050203672 or channel.guild.id == 604945424922574848: #けい鯖、いろは鯖なら
-            with open("channels_id.json", mode="r") as f:
+            with open("./datas/channels_id.json", mode="r") as f:
                 channels_id_dict = json.load(f)
             if channel.guild.id == 585998962050203672: #けい鯖
                 log_server = client1.get_guild(707794528848838676)
@@ -95,7 +95,7 @@ async def on_guild_channel_create(channel):
             new_ch = await log_server.create_text_channel(name=channel.name, position=channel.position)
             channels_id_dict[f"{channel.id}"] = new_ch.id
 
-            with open("channels_id.json", mode="w") as f:
+            with open("./datas/channels_id.json", mode="w") as f:
                 channels_id_json = json.dumps(channels_id_dict, indent=4)
                 f.write(channels_id_json)
 
@@ -126,7 +126,7 @@ async def on_guild_channel_update(before, after):
             if type(before) == discord.CategoryChannel or type(before) == discord.VoiceChannel:
                 return
 
-            with open("channels_id.json", mode="r") as f:
+            with open("./datas/channels_id.json", mode="r") as f:
                 channels_id_dict = json.load(f)
             try:
                 log_channel_id = channels_id_dict[f"{before.id}"]
@@ -160,14 +160,14 @@ async def on_guild_channel_delete(channel):
         ch_notice_ch = client1.get_channel(682732694768975884)
         await ch_notice_ch.send(embed=ch_embed)
         if channel.guild.id == 585998962050203672 or channel.guild.id == 604945424922574848: #けい鯖、いろは鯖なら
-            with open("channels_id.json", mode="r") as f:
+            with open("./datas/channels_id.json", mode="r") as f:
                 channels_id_dict = json.load(f)
             try:
                 del channels_id_dict[f"{channel.id}"]
             except KeyError:
                 pass
             else:
-                with open("channels_id.json", mode="w") as f:
+                with open("./datas/channels_id.json", mode="w") as f:
                     channels_id_json = json.dumps(channels_id_dict, indent=4)
                     f.write(channels_id_json)
 
@@ -274,7 +274,7 @@ async def on_message(message):
             if message.guild.id == 604945424922574848:
                 await iroha.on_message(client1, message)
 
-            with open("custom_commands.json", mode="r", encoding="utf-8") as f:
+            with open("./datas/custom_commands.json", mode="r", encoding="utf-8") as f:
                 custom_commands_dict = json.load(f)
 
             if f"{message.guild.id}" in custom_commands_dict.keys():

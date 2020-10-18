@@ -1672,6 +1672,10 @@ async def kikaku_announcement(client1):
     kikaku_role = discord.utils.get(guild.roles, id=668021019700756490)
     tousen = random.sample(kikaku_role.members, k=2)
 
+    tousen_role = discord.utils.get(guild.roles, id=669720120314167307)
+    tousen[0].add_roles(tousen_role)
+    tousen[1].add_roles(tousen_role)
+
     embed = discord.Embed(title=":tada:おめでとう:tada:", description=f"{tousen[0].mention}\n{tousen[1].mention}", color=0xffff00)
     ch = client1.get_channel(586420858512343050)
     await ch.send(content="<@&668021019700756490>", embed=embed)

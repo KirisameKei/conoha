@@ -1279,6 +1279,11 @@ async def record_story(client1):
     with open("./datas/story_secret.txt", mode="w", encoding="utf-8") as f:
         f.write("")
 
+    ch = client1.get_channel(762546731417731073)
+    await ch.send("----キリトリ----")
+    ch = client1.get_channel(762546959138816070)
+    await ch.send("----キリトリ----")
+
 
 async def create_new_func(client1, message):
     """

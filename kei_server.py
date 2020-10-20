@@ -167,8 +167,8 @@ async def on_message(client1, message):
     if message.content == "/datas":
         await send_zip_data(message)
 
-    if message.content == "/issue":
-        await issue_id(message)
+    #if message.content == "/issue":
+    #    await issue_id(message)
 
     if message.channel.id == 722810355511984185:
         await create_new_func(client1, message)
@@ -1064,6 +1064,7 @@ async def marichan_invite(message):
 
         avatar_url = message.author.avatar_url
 
+        '''
         while True:
             dat = f"{string.digits}{string.ascii_lowercase}{string.ascii_uppercase}"
             file_name = "".join([random.choice(dat) for i in range(10)])
@@ -1105,8 +1106,8 @@ async def marichan_invite(message):
         with open("/var/www/html/discord/login_data.json", mode="w") as f:
             login_data_json = json.dumps(login_data_dict, indent=4)
             f.write(login_data_json)
-        await message.author.send(passwd)
-        embed = discord.Embed(title="DMに招待urlとパスワードを送信しました", description="urlで管理者を持っているサーバに入れられます。\nパスワードは[けいのウェブサイト](http://www.kei-3104.com) で使用できます")
+        await message.author.send(passwd)'''
+        embed = discord.Embed(title="DMに招待url~~とパスワード~~を送信しました", description="urlで管理者を持っているサーバに入れられます。\n~~パスワードは[けいのウェブサイト](http://www.kei-3104.com) で使用できます~~")
         await message.channel.send(embed=embed)
     else:
         await message.channel.send("DMに招待urlを送信しました。管理者権限を持っているサーバに入れられます。")
@@ -1463,6 +1464,7 @@ async def send_zip_data(message):
     await message.author.send(file=f)
 
 
+'''
 async def issue_id(message):
     """
     メッセージ送信者にDMでパスワードを発行して
@@ -1524,7 +1526,7 @@ async def issue_id(message):
         embed = discord.Embed(title="DMにパスワードを送信しました", description="パスワードは[けいのウェブサイト](http://www.kei-3104.com) で使用できます")
         await message.channel.send(embed=embed)
     else:
-        await message.channel.send("既にIDを持っています")
+        await message.channel.send("既にIDを持っています")'''
 
 
 async def count_members(client1):

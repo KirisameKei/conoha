@@ -1140,59 +1140,50 @@ async def accept(message):
 もしよろしければ<#586571234276540449>もしていただけると嬉しいです！")
 
 
-async def ranking_point(client1, message):
-    """
-    ポイントランキング
-    embedを返す"""
-
-    with open("./datas/user_data.json", mode="r") as f:
-        user_data_dict = json.load(f)
-
-    description = ""
-    i = 0
-    for key, value in sorted(user_data_dict.items(), key=lambda x: -x[1]["point"]):
-        if i >= 20:
-            break
-        user = await client1.fetch_user(key)
-        point = value["point"]
-        description += f"{i+1}位: {user.name}: {point}\n"
-        i += 1
-    
-    embed = discord.Embed(title="ポイントランキング", description=f"```\n{description}```", color=0x005500)
-    return embed
-
-
-async def ranking_speak(client1, message):
-    """
-    発言数ランキング
-    embedを返す"""
-
-    with open("./datas/user_data.json", mode="r") as f:
-        user_data_dict = json.load(f)
-
-    description = ""
-    i = 0
-    for key, value in sorted(user_data_dict.items(), key=lambda x: -x[1]["speak"]):
-        if i >= 20:
-            break
-        user = await client1.fetch_user(key)
-        speak = value["speak"]
-        description += f"{i+1}位: {user.name}: {speak}\n"
-        i += 1
-    
-    embed = discord.Embed(title="発言数ランキング", description=f"```\n{description}```", color=0x005500)
-    return embed
-
-
 async def ranking(client1, message):
     """
     第一引数にpointかspeakを"""
 
     operation = message.content.split()[1]
     if operation == "point":
-        embed = await ranking_point(client1, message)
+        with open("./datas/user_data.json", mode="r") as f:
+            user_data_dict = json.load(f)
+
+        description = ""
+        i = 0
+        for key, value in sorted(user_data_dict.items(), key=lambda x: -x[1]["point"]):
+            if i >= 20:
+                break
+            user = client1.get_user(int(key))
+            point = value["point"]
+            if user is None:
+                description += f"{i+1}位: None: {point}\n"
+            else:
+                description += f"{i+1}位: {user.name}: {point}\n"
+            i += 1
+
+        embed = discord.Embed(title="ポイントランキング", description=f"```\n{description}```", color=0x005500)
+
     elif operation == "speak":
-        embed = await ranking_speak(client1, message)
+
+        with open("./datas/user_data.json", mode="r") as f:
+            user_data_dict = json.load(f)
+
+        description = ""
+        i = 0
+        for key, value in sorted(user_data_dict.items(), key=lambda x: -x[1]["speak"]):
+            if i >= 20:
+                break
+            user = client1.get_user(int(key))
+            speak = value["speak"]
+            if user is None:
+                description += f"{i+1}位: None: {speak}\n"
+            else:
+                description += f"{i+1}位: {user.name}: {speak}\n"
+            i += 1
+        
+        embed = discord.Embed(title="発言数ランキング", description=f"```\n{description}```", color=0x005500)
+
     else:
         await message.channel.send("引数が不正です。\nヒント: `/ranking␣[point, speak]`")
         return

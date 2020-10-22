@@ -1041,18 +1041,15 @@ async def marichan_invite(message):
     await message.channel.send("コマンド漏洩防止のためコマンドを削除しました", delete_after=5)
     marichan_inviter_role = discord.utils.get(message.guild.roles, id=663542711290429446)
     await message.author.add_roles(marichan_inviter_role)
-    try:
-        import tokens_ConoHa
-    except ModuleNotFoundError:
-        invite_url = os.getenv("marichan_invite_url")
-    else:
-        invite_url = tokens_ConoHa.marichan_invite_url
+
+    invite_url = os.getenv("marichan_invite_url")
     try:
         await message.author.send(invite_url)
     except discord.errors.Forbidden:
         await message.channel.send("権限エラー。DMを解放してください。")
         return
 
+    '''
     with open("/var/www/html/discord/login_data.json", mode="r") as f:
         login_data_dict = json.load(f)
 
@@ -1064,7 +1061,6 @@ async def marichan_invite(message):
 
         avatar_url = message.author.avatar_url
 
-        '''
         while True:
             dat = f"{string.digits}{string.ascii_lowercase}{string.ascii_uppercase}"
             file_name = "".join([random.choice(dat) for i in range(10)])
@@ -1107,10 +1103,11 @@ async def marichan_invite(message):
             login_data_json = json.dumps(login_data_dict, indent=4)
             f.write(login_data_json)
         await message.author.send(passwd)'''
+
+    else:
         embed = discord.Embed(title="DMに招待url~~とパスワード~~を送信しました", description="urlで管理者を持っているサーバに入れられます。\n~~パスワードは[けいのウェブサイト](http://www.kei-3104.com) で使用できます~~")
         await message.channel.send(embed=embed)
-    else:
-        await message.channel.send("DMに招待urlを送信しました。管理者権限を持っているサーバに入れられます。")
+        #await message.channel.send("DMに招待urlを送信しました。管理者権限を持っているサーバに入れられます。")
 
 
 async def accept(message):

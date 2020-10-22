@@ -1104,10 +1104,9 @@ async def marichan_invite(message):
             f.write(login_data_json)
         await message.author.send(passwd)'''
 
-    else:
-        embed = discord.Embed(title="DMに招待url~~とパスワード~~を送信しました", description="urlで管理者を持っているサーバに入れられます。\n~~パスワードは[けいのウェブサイト](http://www.kei-3104.com) で使用できます~~")
-        await message.channel.send(embed=embed)
-        #await message.channel.send("DMに招待urlを送信しました。管理者権限を持っているサーバに入れられます。")
+    embed = discord.Embed(title="DMに招待url~~とパスワード~~を送信しました", description="urlで管理者を持っているサーバに入れられます。\n~~パスワードは[けいのウェブサイト](http://www.kei-3104.com) で使用できます~~")
+    await message.channel.send(embed=embed)
+    #await message.channel.send("DMに招待urlを送信しました。管理者権限を持っているサーバに入れられます。")
 
 
 async def accept(message):

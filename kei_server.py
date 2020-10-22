@@ -167,6 +167,9 @@ async def on_message(client1, message):
     if message.content == "/datas":
         await send_zip_data(message)
 
+    if message.content == "/ban_list":
+        await ban_list(message, client1)
+
     #if message.content == "/issue":
     #    await issue_id(message)
 
@@ -1458,6 +1461,30 @@ async def send_zip_data(message):
     shutil.make_archive("datas", format="zip", base_dir="./datas")
     f = discord.File("datas.zip")
     await message.author.send(file=f)
+
+
+async def ban_list(message, client1):
+    """
+    事前BANしている人のリスト"""
+
+    if not message.author.id == 523303776120209408:
+        await message.channel.send("このコマンドは使用できません")
+        return
+
+    await message.channel.send("時間かかりますよ")
+
+    with open("./datas/user_data.json", mode="r", encoding="utf-8") as f:
+        user_data_dict = json.load(f)
+
+    banned_user = ""
+    i = 0
+    for user_id in user_data_dict:
+        if user_data_dict[user_id]["ban"]:
+            user = await client1.fetch_user(int(user_id))
+            banned_user += f"{user} <@{user_id}>\n"
+            i +=1
+    banned_user += f"\n以上{i}アカ"
+    await message.channel.send(embed=discord.Embed(title="事前BAN", description=banned_user))
 
 
 '''

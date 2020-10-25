@@ -18,4 +18,5 @@ jobs:
         host: ${{ secrets.HOST }}
         owner:  ${{ secrets.OWNER }}
       run:
-        ssh -i ~/.ssh/id_rsa ${owner}@${host} "cd /home/${owner}/conoha && git pull origin master && sudo systemctl restart disbotc"
+        #ssh -i ~/.ssh/id_rsa ${owner}@${host} "cd /home/${owner}/conoha && git pull origin master && sudo systemctl restart disbotc"
+        ssh -i ~/.ssh/id_rsa ${owner}@${host} "cd /home/${owner}/conoha && git pull origin master && sudo python3 version_up.py"

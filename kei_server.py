@@ -1052,7 +1052,6 @@ async def marichan_invite(message):
         await message.channel.send("権限エラー。DMを解放してください。")
         return
 
-    '''
     with open("/var/www/html/discord/login_data.json", mode="r") as f:
         login_data_dict = json.load(f)
 
@@ -1105,9 +1104,9 @@ async def marichan_invite(message):
         with open("/var/www/html/discord/login_data.json", mode="w") as f:
             login_data_json = json.dumps(login_data_dict, indent=4)
             f.write(login_data_json)
-        await message.author.send(passwd)'''
+        await message.author.send(passwd)
 
-    embed = discord.Embed(title="DMに招待url~~とパスワード~~を送信しました", description="urlで管理者を持っているサーバに入れられます。\n~~パスワードは[けいのウェブサイト](http://www.kei-3104.com) で使用できます~~")
+    embed = discord.Embed(title="DMに招待urlとパスワードを送信しました", description="urlで管理者を持っているサーバに入れられます。\nパスワードは[けいのウェブサイト](http://www.kei-3104.com) で使用できます")
     await message.channel.send(embed=embed)
     #await message.channel.send("DMに招待urlを送信しました。管理者権限を持っているサーバに入れられます。")
 

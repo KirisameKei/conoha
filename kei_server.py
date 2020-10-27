@@ -155,6 +155,9 @@ async def on_message(client1, message):
     if message.channel.id == 762546959138816070:
         await story_secret(message)
 
+    if message.channel.id == 770163289006800927:
+        await kazuate(message)
+
     if message.content == "/marichan_invite":
         await marichan_invite(message)
 
@@ -1036,6 +1039,47 @@ async def check_mcid_exist_now(client1):
     await alart_ch.send(alart_msg)
 
 
+async def kazuate(message):
+    """
+    数当てβ"""
+
+    if message.author.bot:
+        return
+
+    try:
+        int(message.content)
+    except ValueError:
+        return
+
+    if not len(message.content) == 4:
+        return
+
+    with open("./datas/kazuate.txt", mode="r", encoding="utf-8") as f:
+        data = f.read()
+
+    seikai = data.split()[0]
+    kazu = int(data.split()[1])
+
+    if message.content == seikai:
+        '''
+        with open("./datas/user_data.json", mode="r", encoding="utf-8") as f:
+            user_data_dict = json.load(f)
+
+        user_data_dict[f"{message.author.id}"]["point"] += (4500 - kazu)
+
+        with open("./datas/user_data.json", mode="w", encoding="utf-8") as f:
+            user_data_json = json.dumps(user_data_dict, indent=4)
+            f.write(user_data_json)'''
+        await message.channel.send(f"{message.author.name}さん正解！{4500-kazu}ptゲット！(と仮定する)")
+
+        with open("./datas/kazuate.txt", mode="w", encoding="utf-8") as f:
+            f.write("0 0")
+    else:
+        with open("./datas/kazuate.txt", mode="w", encoding="utf-8") as f:
+            f.write(f"{seikai} {kazu+1}")
+        await message.channel.send(f"{message.content}ははずれ！")
+
+
 async def marichan_invite(message):
     """
     魔理沙bot招待コマンドが実行されたとき用の関数"""
@@ -1636,6 +1680,23 @@ async def add_interest(client1):
         f.write(user_data_json)
 
     await notice_ch.send("利子を付与しました")
+
+
+async def setting_kazuate(client1):
+    """
+    数当てをセットする"""
+
+    with open("./datas/kazuate.txt", mode="r", encoding="utf-8") as f:
+        seikai = f.read().split()[0]
+
+    with open("./datas/kazuate.txt", mode="w", encoding="utf-8") as f:
+        f.write(f"{random.randint(1000, 9999)} 0")
+
+    ch = client1.get_channel(770163289006800927)
+    if seikai == "0":
+        await ch.send("セッティング完了")
+    else:
+        await ch.send(f"正解は{seikai}でした")
 
 
 async def kikaku(message):

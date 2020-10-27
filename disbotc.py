@@ -428,6 +428,23 @@ async def record_story():
 record_story.start()
 
 
+@tasks.loop(seconds=69)
+async def setting_kazuate():
+    """
+    数当ての結果発表とリセットを発火する"""
+
+    try:
+        await client1.wait_until_ready()
+        now = datetime.datetime.now()
+
+        if now.weekday() == 2 and now.hour == 3 and now.minute == 15:
+            await kei_server.setting_kazuate(client1)
+
+    except:
+        unexpected_error()
+setting_kazuate.start()
+
+
 """
 @tasks.loop(seconds=60)
 async def kikaku_announcement():

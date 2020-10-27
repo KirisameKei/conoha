@@ -293,12 +293,16 @@ async def login_bonus(message):
         user_data_dict[f"{message.author.id}"] = {"ban": False, "role": [], "mcid": [], "point": 0, "speak": 0}
         had_pt = user_data_dict[f"{message.author.id}"]["point"]
 
-    user_data_dict[f"{message.author.id}"]["point"] = had_pt + get_pt
+    after_pt = had_pt + get_pt
+    if after_pt < 0:
+        after_pt = 0
+
+    user_data_dict[f"{message.author.id}"]["point"] = after_pt
     with open("./datas/user_data.json", mode="w") as f:
         user_data_json = json.dumps(user_data_dict, indent=4)
         f.write(user_data_json)
 
-    await message.channel.send(f"{touraku}\n{get_pt}ptゲット！\n{message.author.name}の保有pt: {had_pt}→{had_pt+get_pt}")
+    await message.channel.send(f"{touraku}\n{get_pt}ptゲット！\n{message.author.name}の保有pt: {had_pt}→{after_pt}")
 
 
 async def add_pt(message, user_id, pt):

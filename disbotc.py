@@ -428,7 +428,7 @@ async def record_story():
 record_story.start()
 
 
-@tasks.loop(seconds=6)
+@tasks.loop(seconds=60)
 async def setting_kazuate():
     """
     数当ての結果発表とリセットを発火する"""

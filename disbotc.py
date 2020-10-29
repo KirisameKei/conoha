@@ -3,6 +3,7 @@ import datetime
 import io
 import json
 import os
+import random
 import subprocess
 import traceback
 from collections import namedtuple
@@ -429,7 +430,7 @@ record_story.start()
 
 
 @tasks.loop(seconds=60)
-async def setting_kazuate():
+async def kazuate():
     """
     数当ての結果発表とリセットを発火する"""
 
@@ -440,9 +441,18 @@ async def setting_kazuate():
         if now.weekday() == 2 and now.hour == 3 and now.minute == 15:
             await kei_server.setting_kazuate(client1)
 
+        if now.weekday() == 4 and now.hour == 3 and now.minute == 15:
+            await kei_server.hint_kazuate(client1, weekday=4)
+
+        if now.weekday() == 6 and now.hour == 3 and now.minute == 15:
+            await kei_server.hint_kazuate(client1, weekday=6)
+
+        if now.weekday() == 1 and now.hour == 3 and now.minute == 15:
+            await kei_server.hint_kazuate(client1, weekday=1)
+
     except:
         unexpected_error()
-setting_kazuate.start()
+kazuate.start()
 
 
 """

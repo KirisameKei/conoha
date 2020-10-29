@@ -1055,26 +1055,30 @@ async def kazuate(message):
     except ValueError:
         return
 
-    if not len(message.content) == 4:
+    if not len(message.content) == 3:
         return
 
     with open("./datas/kazuate.txt", mode="r", encoding="utf-8") as f:
         data = f.read()
 
-    seikai = data.split()[0]
+    seikai = int(data.split()[0])
     kazu = int(data.split()[1])
 
-    if message.content == seikai:
+    if int(message.content) == seikai:
         '''
         with open("./datas/user_data.json", mode="r", encoding="utf-8") as f:
             user_data_dict = json.load(f)
 
-        user_data_dict[f"{message.author.id}"]["point"] += (4500 - kazu)
+        after_pt = user_data_dict[f"{message.author.id}"]["point"] + (500 - kazu)
+        if after_pt < 0:
+            after_pt = 0
+
+        user_data_dict[f"{message.author.id}"]["point"] = after_pt
 
         with open("./datas/user_data.json", mode="w", encoding="utf-8") as f:
             user_data_json = json.dumps(user_data_dict, indent=4)
             f.write(user_data_json)'''
-        await message.channel.send(f"{message.author.name}さん正解！{4500-kazu}ptゲット！(と仮定する)")
+        await message.channel.send(f"{message.author.name}さん正解！{500-kazu}ptゲット！(と仮定する)")
 
         with open("./datas/kazuate.txt", mode="w", encoding="utf-8") as f:
             f.write("0 0")
@@ -1694,13 +1698,51 @@ async def setting_kazuate(client1):
         seikai = f.read().split()[0]
 
     with open("./datas/kazuate.txt", mode="w", encoding="utf-8") as f:
-        f.write(f"{random.randint(1000, 9999)} 0")
+        f.write(f"{random.randint(1, 999)} 0")
 
     ch = client1.get_channel(770163289006800927)
+    await ch.edit(topic="")
     if seikai == "0":
         await ch.send("セッティング完了")
     else:
         await ch.send(f"正解は{seikai}でした")
+        await ch.send("セッティング完了")
+
+
+async def hint_kazuate(client1, weekday):
+    """
+    数当てのヒントを出す"""
+
+    hint_range = [
+        None,
+        (0, 100),
+        None,
+        None,
+        (0, 500),
+        None,
+        (0, 300)
+    ]
+
+    ch = client1.get_channel(770163289006800927)
+    with open("./datas/kazuate.txt", mode="r", encoding="utf-8") as f:
+        kazuate_list = f.read().split()
+
+    seikai = int(kazuate_list[0])
+    kazu = int(kazuate_list[1])
+
+    low = random.randint(hint_range[weekday][0], hint_range[weekday][1])
+    high = random.randint(hint_range[weekday][0], hint_range[weekday][1])
+    low = seikai - low
+    high = seikai + high
+    if low <= 0:
+        low = 1
+    if high >= 1000:
+        high = 999
+    text = f"{low} ~ {high}"
+    await ch.edit(topic=text)
+
+    with open("./datas/kazuate.txt", mode="w", encoding="utf-8") as f:
+        f.write(f"{seikai} {kazu+50}")
 
 
 async def kikaku(message):

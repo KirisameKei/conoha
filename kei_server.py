@@ -1061,7 +1061,11 @@ async def kazuate(message):
     with open("./datas/kazuate.txt", mode="r", encoding="utf-8") as f:
         data = f.read()
 
-    seikai = int(data.split()[0])
+    try:
+        seikai = int(data.split()[0])
+    except ValueError:
+        await message.channel.send("既にあたりが出ています")
+        return
     kazu = int(data.split()[1])
 
     if int(message.content) == seikai:
@@ -1081,7 +1085,7 @@ async def kazuate(message):
         await message.channel.send(f"{message.author.name}さん正解！{500-kazu}ptゲット！(と仮定する)")
 
         with open("./datas/kazuate.txt", mode="w", encoding="utf-8") as f:
-            f.write("0 0")
+            f.write("None 0")
     else:
         with open("./datas/kazuate.txt", mode="w", encoding="utf-8") as f:
             f.write(f"{seikai} {kazu+1}")

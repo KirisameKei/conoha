@@ -1719,23 +1719,27 @@ async def hint_kazuate(client1, weekday):
 
     hint_range = [
         None,
-        (0, 100),
+        100,
         None,
         None,
-        (0, 500),
+        500,
         None,
-        (0, 300)
+        300
     ]
 
     ch = client1.get_channel(770163289006800927)
     with open("./datas/kazuate.txt", mode="r", encoding="utf-8") as f:
         kazuate_list = f.read().split()
 
-    seikai = int(kazuate_list[0])
+    try:
+        seikai = int(kazuate_list[0])
+    except ValueError:
+        await ch.edit(topic="既にあたりが出ています")
+        return
     kazu = int(kazuate_list[1])
 
-    low = random.randint(hint_range[weekday][0], hint_range[weekday][1])
-    high = random.randint(hint_range[weekday][0], hint_range[weekday][1])
+    low = random.randint(0, hint_range[weekday][1])
+    high = random.randint(0, hint_range[weekday][1])
     low = seikai - low
     high = seikai + high
     if low <= 0:

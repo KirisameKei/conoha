@@ -1738,8 +1738,8 @@ async def hint_kazuate(client1, weekday):
         return
     kazu = int(kazuate_list[1])
 
-    low = random.randint(0, hint_range[weekday][1])
-    high = random.randint(0, hint_range[weekday][1])
+    low = random.randint(0, hint_range[weekday])
+    high = random.randint(0, hint_range[weekday])
     low = seikai - low
     high = seikai + high
     if low <= 0:

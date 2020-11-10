@@ -1069,10 +1069,10 @@ async def kazuate(message):
     kazu = int(data.split()[1])
 
     if int(message.content) == seikai:
-        '''
         with open("./datas/user_data.json", mode="r", encoding="utf-8") as f:
             user_data_dict = json.load(f)
 
+        before_pt = user_data_dict[f"{message.author.id}"]["point"]
         after_pt = user_data_dict[f"{message.author.id}"]["point"] + (500 - kazu)
         if after_pt < 0:
             after_pt = 0
@@ -1081,11 +1081,13 @@ async def kazuate(message):
 
         with open("./datas/user_data.json", mode="w", encoding="utf-8") as f:
             user_data_json = json.dumps(user_data_dict, indent=4)
-            f.write(user_data_json)'''
-        await message.channel.send(f"{message.author.name}さん正解！{500-kazu}ptゲット！(と仮定する)")
+            f.write(user_data_json)
+        await message.channel.send(f"{message.author.name}さん正解！{500-kazu}ptゲット！\n{before_pt}pt->{after_pt}pt")
 
         with open("./datas/kazuate.txt", mode="w", encoding="utf-8") as f:
             f.write("None 0")
+
+        await message.channel.edit(topic="既にあたりが出ています")
     else:
         with open("./datas/kazuate.txt", mode="w", encoding="utf-8") as f:
             f.write(f"{seikai} {kazu+1}")

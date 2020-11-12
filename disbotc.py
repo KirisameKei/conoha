@@ -192,7 +192,7 @@ async def on_member_join(member):
         member_embed = discord.Embed(title="╋", description=f"{member.mention}が{member.guild.name}に参加しました\n{when_from}からのdiscordユーザー", color=0xfffffe)
         member_embed.set_author(name=member.name, icon_url=member.avatar_url)
         member_embed.set_footer(text=member.guild.name, icon_url=member.guild.icon_url)
-        join_leave_notice_ch = client1.get_channel(588224929300742154)
+        join_leave_notice_ch = client1.get_channel(709307324170240079)
         await join_leave_notice_ch.send(embed=member_embed)
 
     except:

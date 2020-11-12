@@ -30,7 +30,7 @@ async def on_member_join(client1, member):
             user_data_json = json.dumps(user_data_dict, indent=4)
             f.write(user_data_json)
     else:
-        join_leave_notice_ch = client1.get_channel(588224929300742154)
+        join_leave_notice_ch = client1.get_channel(709307324170240079)
         if user_data["ban"]:
             await member.guild.kick(member)
             await join_leave_notice_ch.send(f"{member.mention}が{member.guild.name}に参加しようとしましたが失敗しました")
@@ -48,7 +48,7 @@ async def on_member_join(client1, member):
     new_role = discord.utils.get(member.guild.roles, id=621641465105481738)
     await member.add_roles(new_role)
 
-    infomation_ch = client1.get_channel(709307324170240079)
+    infomation_ch = client1.get_channel(588224929300742154)
     info_embed = discord.Embed(title=f"🎉{member.name}さんようこそ{member.guild.name}へ！🎉", color=0xffff00)
     info_embed.add_field(name="はじめに", value="<#586000955053441039>をお読みください\n大体の流れはそこに書いてあります。(botでも誘導します)", inline=False)
     info_embed.add_field(name="MCIDの報告", value="<#640833025822949387>でMCIDを報告してください\n\

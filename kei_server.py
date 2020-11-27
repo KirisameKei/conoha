@@ -1673,7 +1673,6 @@ async def add_interest(client1):
         user_data_dict = json.load(f)
 
     notice_ch = client1.get_channel(585999375952642067)
-    await notice_ch.send("利子を付与します")
     for user_id in user_data_dict:
         point = user_data_dict[user_id]["point"]
         if point <= 128:

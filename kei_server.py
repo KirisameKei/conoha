@@ -173,6 +173,12 @@ async def on_message(client1, message):
     if message.content == "/ban_list":
         await ban_list(message, client1)
 
+    if message.content == "/gban_list":
+        await gban_list(message, client1)
+
+    if message.content.startswith("/leave_guild "):
+        await leave_guild(message, client1)
+
     #if message.content == "/issue":
     #    await issue_id(message)
 
@@ -1533,6 +1539,96 @@ async def ban_list(message, client1):
             i +=1
     banned_user += f"\n以上{i}アカ"
     await message.channel.send(embed=discord.Embed(title="事前BAN", description=banned_user))
+
+
+async def gban_list(message, client1):
+    """
+    魔理沙はこのサーバには入りません"""
+
+    if not message.author.id == 523303776120209408:
+        await message.channel.send("このコマンドは使用できません")
+        return
+
+    with open("./datas/ban_server.json", mode="r", encoding="utf-8") as f:
+        ban_server_list = json.load(f)
+
+    text = ""
+    for ban_server in ban_server_list:
+        text += f"ServerID: {ban_server[0]}\nServerName: {ban_server[1]}\nOwnerID: {ban_server[2]}\n\n"
+
+    await message.channel.send(text)
+
+
+async def leave_guild(message, client1):
+    """
+    サーバから抜ける"""
+
+    if not message.author.id == 523303776120209408:
+        await message.channel.send("このコマンドは使用できません")
+        return
+
+    try:
+        guild_id = int(message.content.split()[1])
+        reason = message.content.split()[2]
+    except ValueError:
+        await message.channel.send("intキャストできる形で入力してください")
+        return
+    except IndexError:
+        await message.channel.send("サーバから抜ける理由を書いてください")
+        return
+
+    guild = client1.get_guild(guild_id)
+    embed = discord.Embed(
+        title="以下のサーバから抜け、サーバをブラックリスト登録しますか？",
+        description="はい(離脱&ブラックリスト登録): 👍\nいいえ(ミス): 👎",
+        color=0xff0000
+    )
+    embed.set_author(name=guild.name, icon_url=guild.icon_url_as(format="png"))
+    embed.set_footer(text=guild.owner.name, icon_url=guild.owner.avatar_url_as(format="png"))
+    msg = await message.channel.send(embed=embed)
+    await msg.add_reaction("👍")
+    await msg.add_reaction("👎")
+    def check(reaction, user):
+        return user == message.author and (str(reaction.emoji) == "👍" or str(reaction.emoji) == "👎")
+    try:
+        reaction, user = await client1.wait_for("reaction_add", check=check, timeout=60)
+    except asyncio.TimeoutError:
+        await message.channel.send("タイムアウトしました。最初からやり直してください")
+        return
+
+    else:
+        if str(reaction.emoji) == "👎":
+            await message.channel.send("キャンセルしました")
+            return
+
+        if guild.owner.id == 523303776120209408:
+            await message.channel.send("あんた正気か？")
+            return
+
+        for ch in guild.text_channels:
+            try:
+                await ch.send(f"{client1.user.name}はこのサーバを抜けます\nReason: {reason}")
+            except discord.errors.Forbidden:
+                pass
+            else:
+                break
+
+        with open("./datas/ban_server.json", mode="r", encoding="utf-8") as f:
+            ban_server_list = json.load(f)
+
+        ban_server_list.append(
+            [
+                guild.id,
+                guild.name,
+                guild.owner.id
+            ]
+        )
+
+        with open("./datas/ban_server.json", mode="w", encoding="utf-8") as f:
+            ban_server_list_json = json.dumps(ban_server_list, indent=4, ensure_ascii=False)
+            f.write(ban_server_list_json)
+
+        await guild.leave()
 
 
 '''

@@ -470,20 +470,6 @@ async def kikaku_announcement():
 kikaku_announcement.start()"""
 
 
-@tasks.loop(seconds=60)
-async def kikaku_announcement():
-    try:
-        await client1.wait_until_ready()
-        now = datetime.datetime.now()
-
-        if now.month == 11 and now.day == 18 and now.hour == 22 and now.minute == 0:
-            await kei_server.kikaku_announcement(client1)
-    except:
-        unexpected_error()
-kikaku_announcement.start()
-
-
-
 Entry = namedtuple("Entry", "client event token")
 entries = [
     Entry(client=client1,event=asyncio.Event(),token=discord_bot_token_1),

@@ -203,7 +203,7 @@ async def count_message(message):
         counter_json = json.dumps(counter_dict, indent=4)
         f.write(counter_json)
 
-    if message.channel.id == 586075792950296576 or message.channel.id == 770163289006800927:
+    if message.channel.id in (586075792950296576, 770163289006800927, 691901316133290035): #スパム許可、数当て、ミニゲームなら
         return
 
     with open("./datas/user_data.json", mode="r") as f:

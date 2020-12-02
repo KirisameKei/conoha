@@ -13,6 +13,7 @@ import discord
 import requests
 from discord.ext import tasks
 
+import common
 import custom_commands_exe
 import emoji_server
 import iroha
@@ -188,24 +189,52 @@ async def on_guild_join(guild):
                 await guild.leave()
                 return
 
-        for ch in guild.text_channels:
-            title = "よろしくお願いします!!"
-            description = f"初めましての方は初めまして、そうでない方はまたお会いしましたね。<@!523303776120209408>制作の{client1.user.name}です。\n"
-            description += f"このbotを{guild.name}に導入していただきありがとうございます。\n"
-            description += "皆様にお願いしたいことがあります。このbotに極度に負荷をかけるような行為をしないでください。\n"
-            description += "バグ、不具合等問題がありましたら`/bug_report`コマンドで報告ができます\n"
-            description += "追加してほしい機能がありましたら`/new_func`コマンドで追加申請ができます(現在管理者持ち以外も実行できてしまいます。いずれ使えなくしておきます)\n"
-            description += "問題がなかったらお楽しみください。\n"
-            description += "最後に[私のサーバ](https://discord.gg/nrvMKBT)を宣伝・紹介させてください。"
-            description += "このbotについてもっと知りたい、このbotを招待したい、けいの活動に興味がある、理由は何でも構いません。ぜひ見ていってください"
-            self_introduction_embed = discord.Embed(title=title, description=description, color=0xffff00)
-            kei = client1.get_user(523303776120209408)
-            self_introduction_embed.set_footer(text="←作った人", icon_url=kei.avatar_url_as(format="png"))
-            try:
-                await ch.send(embed=self_introduction_embed)
-                break
-            except discord.errors.Forbidden:
-                pass
+        title = "よろしくお願いします!!"
+        description = f"初めましての方は初めまして、そうでない方はまたお会いしましたね。<@!523303776120209408>制作の{client1.user.name}です。\n"
+        description += f"このbotを{guild.name}に導入していただきありがとうございます。\n"
+        description += "皆様にお願いしたいことがあります。このbotに極度に負荷をかけるような行為をしないでください。\n"
+        description += "バグ、不具合等問題がありましたら`/bug_report`コマンドで報告ができます\n"
+        description += "追加してほしい機能がありましたら`/new_func`コマンドで追加申請ができます(現在管理者持ち以外も実行できてしまいます。いずれ使えなくしておきます)\n"
+        description += "問題がなかったらお楽しみください。\n"
+        description += "最後に[私のサーバ](https://discord.gg/nrvMKBT)を宣伝・紹介させてください。"
+        description += "このbotについてもっと知りたい、このbotを招待したい、けいの活動に興味がある、理由は何でも構いません。ぜひ見ていってください"
+        self_introduction_embed = discord.Embed(title=title, description=description, color=0xffff00)
+        kei = client1.get_user(523303776120209408)
+        self_introduction_embed.set_footer(text="←作った人", icon_url=kei.avatar_url_as(format="png"))
+
+        notice_from_marisa_ch_id = None
+        try:
+            overwrites = {
+                guild.default_role: discord.PermissionOverwrite(send_messages=False),
+                guild.me: discord.PermissionOverwrite(send_messages=True)
+            }
+            ch = await guild.create_text_channel(
+                name="魔理沙からのお知らせ",
+                overwrites=overwrites,
+                position=0,
+                topic="魔理沙botに関するお知らせが投稿されます",
+                reason="魔理沙botの機能確保のため"
+            )
+        except discord.errors.Forbidden:
+            for ch in guild.text_channels:
+                try:
+                    await ch.send(embed=self_introduction_embed)
+                    notice_from_marisa_ch_id = ch.id
+                    break
+                except discord.errors.Forbidden:
+                    pass
+        else:
+            await ch.send(embed=self_introduction_embed)
+            notice_from_marisa_ch_id = ch.id
+
+        with open("./datas/marisa_notice.json", mode="r", encoding="utf-8") as f:
+            marisa_notice_dict = json.load(f)
+
+        marisa_notice_dict[f"{guild.id}"] = notice_from_marisa_ch_id
+
+        with open("./datas/marisa_notice.json", mode="w", encoding="utf-8") as f:
+            marisa_notice_json = json.dumps(marisa_notice_dict, indent=4)
+            f.write(marisa_notice_json)
 
         for ch in guild.text_channels:
             try:

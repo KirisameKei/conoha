@@ -179,6 +179,9 @@ async def on_message(client1, message):
     if message.content.startswith("/leave_guild "):
         await leave_guild(message, client1)
 
+    if message.content.startswith("global_notice "):
+        await global_notice(client1, message)
+
     #if message.content == "/issue":
     #    await issue_id(message)
 
@@ -1629,6 +1632,65 @@ async def leave_guild(message, client1):
             f.write(ban_server_list_json)
 
         await guild.leave()
+
+
+async def global_notice(client1, message):
+    """
+    導入サーバすべてのお知らせチャンネルにお知らせを送信"""
+
+    if not message.author.id == 523303776120209408:
+        await message.channel.send("このコマンドは使用できません")
+        return
+
+    msg = message.content.replace("/global_notice ", "")
+
+    with open("./datas/marisa_notice.json", mode="r", encoding="utf-8") as f:
+        marisa_notice_dict = json.load(f)
+
+    del_guild_list = []
+    for guild_id in marisa_notice_dict:
+        guild = client1.get_guild(int(guild_id))
+        if guild is None:
+            del_guild_list.append(guild_id)
+        else:
+            notice_ch = guild.get_channel(marisa_notice_dict[guild_id])
+            if notice_ch is None:
+                flag = False
+                for ch in guild.text_channels:
+                    try:
+                        await ch.send(msg)
+                        marisa_notice_dict[guild_id] = ch.id
+                        flag = True
+                        break
+                    except discord.errors.Forbidden:
+                        pass
+                if not flag:
+                    try:
+                        await guild.owner.send(f"{guild.name}に魔理沙botが発言できるチャンネルがありません。以下の内容をサーバメンバーに周知してください\n\n{msg}")
+                    except discord.errors.Forbidden:
+                        pass
+            else:
+                try:
+                    await notice_ch.send(msg)
+                except discord.errors.Forbidden:
+                    flag = False
+                    for ch in guild.text_channels:
+                        try:
+                            await ch.send(msg)
+                            marisa_notice_dict[guild_id] = ch.id
+                            flag = True
+                            break
+                        except discord.errors.Forbidden:
+                            pass
+                    if not flag:
+                        try:
+                            await guild.owner.send(f"{guild.name}に魔理沙botが発言できるチャンネルがありません。以下の内容をサーバメンバーに周知してください\n\n{msg}")
+                        except discord.errors.Forbidden:
+                            pass
+
+    with open("./datas/marisa_notice.json", mode="w", encoding="utf-8") as f:
+        marisa_notice_json = json.dumps(marisa_notice_dict, indent=4)
+        f.write(marisa_notice_json)
 
 
 '''

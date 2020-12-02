@@ -1,9 +1,8 @@
 import json
-import os
 
 import discord
 
-async def set_notice_ch(client1, message):
+async def set_notice_ch(message):
     """
     導入サーバすべてのお知らせチャンネルにお知らせを送信"""
 
@@ -28,3 +27,25 @@ async def set_notice_ch(client1, message):
     with open("./datas/marisa_notice.json", mode="w", encoding="utf-8") as f:
         notice_ch_json = json.dumps(notice_ch_dict, indent=4)
         f.write(notice_ch_json)
+
+
+async def check_notice_ch(message):
+    """
+    全体通知チャンネルを確認する"""
+
+    with open("./datas/marisa_notice.json", mode="r", encoding="utf-8") as f:
+        notice_ch_dict = json.load(f)
+
+    try:
+        notice_ch_id = notice_ch_dict[f"{message.guild.id}"]
+    except KeyError:
+        notice_ch_dict[f"{message.guild.id}"] = None
+        notice_ch_id = notice_ch_dict[f"{message.guild.id}"]
+
+    if notice_ch_id is None:
+        await message.channel.send("通知を拒否しています。`/set_notice_ch`を実行すると実行チャンネルで本botに関する通知を受け取れます")
+        with open("./datas/marisa_notice.json", mode="w", encoding="utf-8") as f:
+            notice_ch_json = json.dumps(notice_ch_dict, indent=4)
+            f.write(notice_ch_json)
+    else:
+        await message.channel.send(f"<#{notice_ch_id}>")

@@ -324,7 +324,10 @@ async def on_message(message):
                 await iroha.on_message(client1, message)
 
             if message.content.startswith("/set_notice_ch"):
-                await common.set_notice_ch(client1, message)
+                await common.set_notice_ch(message)
+
+            if message.content == "/check_notice_ch":
+                await common.check_notice_ch(message)
 
             with open("./datas/custom_commands.json", mode="r", encoding="utf-8") as f:
                 custom_commands_dict = json.load(f)

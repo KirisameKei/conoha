@@ -303,16 +303,6 @@ async def on_message(message):
         await client1.close()
 
     try:
-        if message.content == "/ConoHa_stop":
-            if not where_from == "ConoHa":
-                return
-            if not message.author.id == 523303776120209408:
-                await message.channel.send("何様のつもり？")
-                return
-            notice_ch = client1.get_channel(708162800987668541)
-            await notice_ch.send("ConoHa起動のbotを終了します")
-            await client1.close()
-        
         try:
             if message.content.startswith("#") or message.content.startswith("//") or (message.content.startswith(r"/\*") and message.content.endswith(r"\*/")):
                 return

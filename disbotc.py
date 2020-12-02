@@ -323,6 +323,9 @@ async def on_message(message):
             if message.guild.id == 604945424922574848:
                 await iroha.on_message(client1, message)
 
+            if message.content.startswith("/set_notice_ch"):
+                await common.set_notice_ch(client1, message)
+
             with open("./datas/custom_commands.json", mode="r", encoding="utf-8") as f:
                 custom_commands_dict = json.load(f)
 

@@ -15,10 +15,13 @@ async def set_notice_ch(message):
 
     if message.content == "/set_notice_ch":
         notice_ch_dict[f"{message.guild.id}"] = message.channel.id
-        await message.channel.send("このチャンネルに全体通知を送信します")
+        try:
+            await message.channel.send("このチャンネルに全体通知を送信します")
+        except discord.errors.Forbidden:
+            await message.author.send("このチャンネルで魔理沙が喋ることはできません")
 
     elif message.content.split()[1].lower() == "none":
-        notice_ch_dict[f"{message.guild.id}"] = None
+        notice_ch_dict[f"{message.guild.id}"] = "rejected"
         await message.channel.send("全体通知受信を拒否しました")
 
     else:
@@ -39,10 +42,10 @@ async def check_notice_ch(message):
     try:
         notice_ch_id = notice_ch_dict[f"{message.guild.id}"]
     except KeyError:
-        notice_ch_dict[f"{message.guild.id}"] = None
+        notice_ch_dict[f"{message.guild.id}"] = "rejectd"
         notice_ch_id = notice_ch_dict[f"{message.guild.id}"]
 
-    if notice_ch_id is None:
+    if notice_ch_id == "rejected":
         await message.channel.send("通知を拒否しています。`/set_notice_ch`を実行すると実行チャンネルで本botに関する通知を受け取れます")
         with open("./datas/marisa_notice.json", mode="w", encoding="utf-8") as f:
             notice_ch_json = json.dumps(notice_ch_dict, indent=4)

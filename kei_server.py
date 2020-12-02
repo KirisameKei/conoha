@@ -179,7 +179,7 @@ async def on_message(client1, message):
     if message.content.startswith("/leave_guild "):
         await leave_guild(message, client1)
 
-    if message.content.startswith("global_notice "):
+    if message.content.startswith("/global_notice "):
         await global_notice(client1, message)
 
     #if message.content == "/issue":
@@ -1648,49 +1648,54 @@ async def global_notice(client1, message):
         marisa_notice_dict = json.load(f)
 
     for guild in client1.guilds:
-        try:
-            notice_ch = guild.get_channel(marisa_notice_dict[f"{guild.id}"])
-        except KeyError:
-            marisa_notice_dict[f"{guild.id}"] = None
-            notice_ch = None
-
-        if notice_ch is None:
-            flag = False
-            for ch in guild.text_channels:
-                try:
-                    await ch.send(msg)
-                    marisa_notice_dict[guild_id] = ch.id
-                    flag = True
-                    break
-                except discord.errors.Forbidden:
-                    pass
-            if not flag:
-                try:
-                    await guild.owner.send(f"{guild.name}に魔理沙botが発言できるチャンネルがありません。以下の内容をサーバメンバーに周知してください\n\n{msg}")
-                except discord.errors.Forbidden:
-                    pass
-        else:
+        if guild.id in (585998962050203672, 587909823665012757, 783322430181474304, 735632039050477649):
             try:
-                await notice_ch.send(msg)
-            except discord.errors.Forbidden:
+                notice_ch = guild.get_channel(marisa_notice_dict[f"{guild.id}"])
+            except KeyError:
+                marisa_notice_dict[f"{guild.id}"] = None
+                notice_ch = None
+
+            if notice_ch is None:
                 flag = False
                 for ch in guild.text_channels:
                     try:
                         await ch.send(msg)
-                        marisa_notice_dict[guild_id] = ch.id
+                        marisa_notice_dict[f"{guild.id}"] = ch.id
                         flag = True
                         break
                     except discord.errors.Forbidden:
                         pass
                 if not flag:
                     try:
-                        await guild.owner.send(f"{guild.name}に魔理沙botが発言できるチャンネルがありません。以下の内容をサーバメンバーに周知してください\n\n{msg}")
+                        await guild.owner.send(f"{guild.name}に{client1.user.name}が発言できるチャンネルがありません。以下の内容をサーバメンバーに周知してください\n\n{msg}")
                     except discord.errors.Forbidden:
                         pass
+            elif notice_ch == "rejected":
+                pass
+            else:
+                try:
+                    await notice_ch.send(msg)
+                except discord.errors.Forbidden:
+                    flag = False
+                    for ch in guild.text_channels:
+                        try:
+                            await ch.send(msg)
+                            marisa_notice_dict[f"{guild.id}"] = ch.id
+                            flag = True
+                            break
+                        except discord.errors.Forbidden:
+                            pass
+                    if not flag:
+                        try:
+                            await guild.owner.send(f"{guild.name}に{client1.user.name}が発言できるチャンネルがありません。以下の内容をサーバメンバーに周知してください\n\n{msg}")
+                        except discord.errors.Forbidden:
+                            pass
 
     with open("./datas/marisa_notice.json", mode="w", encoding="utf-8") as f:
         marisa_notice_json = json.dumps(marisa_notice_dict, indent=4)
         f.write(marisa_notice_json)
+
+    await message.channel.send("全サーバに通知完了")
 
 
 '''

@@ -20,10 +20,12 @@ async def set_notice_ch(message):
         except discord.errors.Forbidden:
             await message.author.send("このチャンネルで魔理沙が喋ることはできません")
 
-    elif message.content.split()[1].lower() == "none":
-        notice_ch_dict[f"{message.guild.id}"] = "rejected"
-        await message.channel.send("全体通知受信を拒否しました")
-
+    elif message.content.startswith("/set_notice_ch "):
+        if message.content.split()[1].lower() == "none":
+            notice_ch_dict[f"{message.guild.id}"] = "rejected"
+            await message.channel.send("全体通知受信を拒否しました")
+        else:
+            await message.channel.send("`/set_notice_ch`で実行チャンネルを通知チャンネルに、`/set_notice_ch None`で通知拒否")
     else:
         await message.channel.send("`/set_notice_ch`で実行チャンネルを通知チャンネルに、`/set_notice_ch None`で通知拒否")
 

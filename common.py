@@ -42,13 +42,15 @@ async def check_notice_ch(message):
     try:
         notice_ch_id = notice_ch_dict[f"{message.guild.id}"]
     except KeyError:
-        notice_ch_dict[f"{message.guild.id}"] = "rejectd"
-        notice_ch_id = notice_ch_dict[f"{message.guild.id}"]
+        notice_ch_id = 0
+        notice_ch_dict[f"{message.guild.id}"] = 0 #これで記録すれば全体通知使用時にchannelがNoneになる
 
     if notice_ch_id == "rejected":
         await message.channel.send("通知を拒否しています。`/set_notice_ch`を実行すると実行チャンネルで本botに関する通知を受け取れます")
+    elif notice_ch_id == 0:
         with open("./datas/marisa_notice.json", mode="w", encoding="utf-8") as f:
             notice_ch_json = json.dumps(notice_ch_dict, indent=4)
             f.write(notice_ch_json)
+        await message.channel.send("未設定、発言権のある一番上のチャンネルで通知を行います")
     else:
         await message.channel.send(f"<#{notice_ch_id}>")

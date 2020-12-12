@@ -52,7 +52,7 @@ async def emoji_update(client1, guild, before, after):
             image = io.BytesIO(res.content)
             image.seek(0)
             emoji_ = Image.open(image)
-            emoji_.save(f"./emojis/{emoji.name}.png")
+            emoji_.save(f"./emojis/{emoji.id}.png")
 
             if different[0].animated: #アニメ絵文字なら
                 description = f"{user}によりアニメ絵文字: **:{emoji_name}:**が作成されました"

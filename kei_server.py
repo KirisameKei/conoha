@@ -1933,7 +1933,7 @@ async def kikaku(message):
         return
 
     now = datetime.datetime.now()
-    finish_time = datetime.datetime(2020, 11, 18, 22, 0)
+    finish_time = datetime.datetime(2021, 1, 1, 0, 0)
     if now >= finish_time:
         await message.channel.send("現在企画は行われていません")
         return
@@ -1968,17 +1968,14 @@ async def kikaku_announcement(client1):
 
     guild = client1.get_guild(585998962050203672)
     kikaku_role = discord.utils.get(guild.roles, id=668021019700756490)
-    tousen = random.sample(kikaku_role.members, k=2)
+    tousen = random.sample(kikaku_role.members, k=3)
 
     tousen_role = discord.utils.get(guild.roles, id=669720120314167307)
     tousen[0].add_roles(tousen_role)
     tousen[1].add_roles(tousen_role)
+    tousen[2].add_roles(tousen_role)
 
-    embed = discord.Embed(title=":tada:おめでとう:tada:", description=f"{tousen[0].mention}\n{tousen[1].mention}", color=0xffff00)
+    embed = discord.Embed(title=":tada:おめでとう:tada:", description=f"1等: {tousen[0].mention}\n2等: {tousen[1].mention}, {tousen[2].mention}", color=0xffff00)
     ch = client1.get_channel(586420858512343050)
     await ch.send(content="<@&668021019700756490>", embed=embed)
-    await ch.send(
-        "惜しくも外れてしまった方にも参加賞としてガチャ券2stを進呈します。\n"
-        "「そんなもん取りに来る時間があったら整地したいわ」という方、<#665487669953953804>で`/cancel`を実行してください。\n"
-        "**受け取り期日は2020/11/30までとします。**ただし、事情により期限内に受け取れない場合期限内に言っていただければ対応します。"
-    )
+    await ch.send("**受け取り期日は2021/1/15までとします。**ただし、事情により期限内に受け取れない場合期限内に言っていただければ対応します。")

@@ -509,18 +509,17 @@ async def kazuate():
 kazuate.start()
 
 
-"""
 @tasks.loop(seconds=60)
 async def kikaku_announcement():
     try:
         await client1.wait_until_ready()
         now = datetime.datetime.now()
 
-        if now.month == 6 and now.day == 30 and now.hour == 20 and now.minute == 10:
+        if now.month == 1 and now.day == 1 and now.hour == 0 and now.minute == 0:
             await kei_server.kikaku_announcement(client1)
     except:
         unexpected_error()
-kikaku_announcement.start()"""
+kikaku_announcement.start()
 
 
 Entry = namedtuple("Entry", "client event token")

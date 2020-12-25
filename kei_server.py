@@ -1869,7 +1869,7 @@ async def setting_kazuate(client1):
 
     ch = client1.get_channel(770163289006800927)
     await ch.edit(topic="")
-    if seikai == "0":
+    if seikai is None:
         await ch.send("セッティング完了")
     else:
         await ch.send(f"正解は{seikai}でした")
@@ -1913,7 +1913,7 @@ async def hint_kazuate(client1, weekday):
     await ch.edit(topic=text)
 
     with open("./datas/kazuate.txt", mode="w", encoding="utf-8") as f:
-        f.write(f"{seikai} {kazu+50}")
+        f.write(f"{seikai} {kazu+100}")
 
 
 async def kikaku(message):

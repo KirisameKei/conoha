@@ -1869,7 +1869,7 @@ async def setting_kazuate(client1):
 
     ch = client1.get_channel(770163289006800927)
     await ch.edit(topic="")
-    if seikai is None:
+    if seikai == "None":
         await ch.send("セッティング完了")
     else:
         await ch.send(f"正解は{seikai}でした")

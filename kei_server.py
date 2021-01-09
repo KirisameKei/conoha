@@ -1054,7 +1054,7 @@ async def check_mcid_exist_now(client1):
 
 async def kazuate(message):
     """
-    数当てβ"""
+    数当て"""
 
     if message.author.bot:
         return

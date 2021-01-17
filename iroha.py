@@ -26,36 +26,31 @@ async def on_message(client1, message):
     """
     いろは鯖に関する機能"""
 
-    if message.channel.id == 605401823561383937 and message.author.id == 606668660853178399:
-        if message.embeds:
-            msg = message.embeds[0].author.name
-            if msg.endswith("joined the server"):
-                await iroha_server_login(message)
-        if message.channel.id == 605401823561383937 and message.author.id == 606668660853178399 and message.embeds:
-            if message.embeds[0].color == 0xffd700:
-        #if message.content.endswith("joined the server for the first time"):
-                await iroha_server_first_login(message)
+    if message.channel.id == 605401823561383937 and message.author.id == 606668660853178399 and message.embeds:
+        msg = message.embeds[0].author.name
+        if msg.endswith("joined the server"):
+            await iroha_server_login(message)
 
-    if message.content == "/test":
-        ch = client1.get_channel(605401823561383937)
-        msg = await ch.fetch_message(739279189353431101)
-        print(msg.embeds[0].color)
+        if msg.endswith("joined the server for the first time"):
+            await iroha_server_first_login(message, msg)
 
 
-async def iroha_server_first_login(message):
+async def iroha_server_first_login(message, msg):
     """
     いろは鯖に初ログインしたときの処理"""
 
-    mcid = message.content.split()[1].replace("**","").replace("\\","")
+    mcid = msg.split()[0].replace("\\", "")
     await message.channel.send(f"{mcid}さんいろは鯖へようこそ！")
-    await iroha_server_login(message)
+    await iroha_server_login(message, mcid)
 
 
-async def iroha_server_login(message):
+async def iroha_server_login(message, mcid=None):
     """
     マイクラいろは鯖のログイン記録に関する機能"""
 
-    mcid = message.embeds[0].author.name.split()[0].replace("\\","")
+    if mcid is None:
+        mcid = message.embeds[0].author.name.split()[0].replace("\\","")
+
     uuid = mcid_to_uuid(mcid)
     with open("./datas/login_record.json", mode="r") as f:
         data_dict = json.load(f)

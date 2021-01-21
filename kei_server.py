@@ -753,7 +753,7 @@ def check_mcid_logined(mcid):
     整地鯖にログインしたことがあるかをチェックする
     boolまたはNoneTypeを返す"""
 
-    url = f"https://w4.minecraftserver.jp/player/{mcid.lower()}"
+    url = f"https://ranking-gigantic.seichi.click/player/{mcid.lower()}"
     try:
         res = requests.get(url)
         res.raise_for_status()

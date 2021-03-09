@@ -10,7 +10,7 @@ import string
 
 import bs4
 import discord
-import mojimoji
+import jaconv
 import requests
 
 async def on_member_join(client1, member):
@@ -155,9 +155,6 @@ async def on_message(client1, message):
     if message.channel.id == 762546959138816070:
         await story_secret(message)
 
-    if message.channel.id == 770163289006800927:
-        await kazuate(message)
-
     if message.content == "/marichan_invite":
         await marichan_invite(message)
 
@@ -181,6 +178,9 @@ async def on_message(client1, message):
 
     if message.content.startswith("/global_notice "):
         await global_notice(client1, message)
+
+    if message.content == "/kikaku_test":
+        await kikaku_announcement(client1)
 
     #if message.content == "/issue":
     #    await issue_id(message)
@@ -249,13 +249,15 @@ async def login_bonus(message):
     if message.author.bot:
         return
 
-    msg = mojimoji.han_to_zen(mojimoji.zen_to_han(message.content, kana=False), ascii=False) #全角英字を半角に、半角カタカナを全角に
-    msg = msg.lower()
-    msg = msg.replace("　", "").replace(" ", "").replace("\n", "").replace("゛", "").replace("っ", "").replace("ッ", "").replace("-", "").replace("ー", "")
-    msg = msg.replace("ma", "ま").replace("ri", "り").replace("sa", "さ")
-    msg = msg.replace("マ", "ま").replace("リ", "り").replace("サ", "さ")
-    msg = msg.replace("chan", "ちゃん").replace("tyan", "ちゃん").replace("tan", "たん")
-    msg = msg.replace("チ", "ち").replace("ャ", "ゃ").replace("タ", "た").replace("ン", "ん")
+    msg = jaconv.h2z(message.content, ignore="", kana=True, ascii=True, digit=True) #全て全角にする
+    msg = jaconv.z2h(msg, ignore="", kana=False, ascii=True, digit=True) #英数のみ半角にする
+    msg = jaconv.kata2hira(msg, ignore="") #全てひらがなにする
+    msg = msg.lower() #小文字にする
+    msg = msg.replace(" ", "").replace("\n", "").replace("゛", "")\
+        .replace("っ", "").replace("-", "").replace("ー", "") #邪魔な装飾を消す(全角スペースはz2hで消えてる)
+    msg = msg.replace("chan", "ちゃん").replace("tyan", "ちゃん").replace("tan", "たん") #英語でのちゃん付けを変換
+    msg = msg.replace("ma", "ま").replace("ri", "り").replace("sa", "さ") #ローマ字をひらがなに変換
+    #この時点で全角ひらがなと半角英数のみ
     NG_word_list = [
         "魔理",
         "まりさ",
@@ -1052,57 +1054,6 @@ async def check_mcid_exist_now(client1):
     await alart_ch.send(alart_msg)
 
 
-async def kazuate(message):
-    """
-    数当て"""
-
-    if message.author.bot:
-        return
-
-    try:
-        int(message.content)
-    except ValueError:
-        return
-
-    if not len(message.content) == 3:
-        return
-
-    with open("./datas/kazuate.txt", mode="r", encoding="utf-8") as f:
-        data = f.read()
-
-    try:
-        seikai = int(data.split()[0])
-    except ValueError:
-        await message.channel.send("既にあたりが出ています")
-        return
-    kazu = int(data.split()[1])
-
-    if int(message.content) == seikai:
-        with open("./datas/user_data.json", mode="r", encoding="utf-8") as f:
-            user_data_dict = json.load(f)
-
-        before_pt = user_data_dict[f"{message.author.id}"]["point"]
-        after_pt = user_data_dict[f"{message.author.id}"]["point"] + (500 - kazu)
-        if after_pt < 0:
-            after_pt = 0
-
-        user_data_dict[f"{message.author.id}"]["point"] = after_pt
-
-        with open("./datas/user_data.json", mode="w", encoding="utf-8") as f:
-            user_data_json = json.dumps(user_data_dict, indent=4)
-            f.write(user_data_json)
-        await message.channel.send(f"{message.author.name}さん正解！{500-kazu}ptゲット！\n{before_pt}pt->{after_pt}pt")
-
-        with open("./datas/kazuate.txt", mode="w", encoding="utf-8") as f:
-            f.write("None 0")
-
-        await message.channel.edit(topic="既にあたりが出ています")
-    else:
-        with open("./datas/kazuate.txt", mode="w", encoding="utf-8") as f:
-            f.write(f"{seikai} {kazu+1}")
-        await message.channel.send(f"{message.content}ははずれ！")
-
-
 async def marichan_invite(message):
     """
     魔理沙bot招待コマンドが実行されたとき用の関数"""
@@ -1857,65 +1808,6 @@ async def add_interest(client1):
     await notice_ch.send("利子を付与しました")
 
 
-async def setting_kazuate(client1):
-    """
-    数当てをセットする"""
-
-    with open("./datas/kazuate.txt", mode="r", encoding="utf-8") as f:
-        seikai = f.read().split()[0]
-
-    with open("./datas/kazuate.txt", mode="w", encoding="utf-8") as f:
-        f.write(f"{random.randint(1, 999)} 0")
-
-    ch = client1.get_channel(770163289006800927)
-    await ch.edit(topic="")
-    if seikai == "None":
-        await ch.send("セッティング完了")
-    else:
-        await ch.send(f"正解は{seikai}でした")
-        await ch.send("セッティング完了")
-
-
-async def hint_kazuate(client1, weekday):
-    """
-    数当てのヒントを出す"""
-
-    hint_range = [
-        None,
-        100,
-        None,
-        None,
-        500,
-        None,
-        300
-    ]
-
-    ch = client1.get_channel(770163289006800927)
-    with open("./datas/kazuate.txt", mode="r", encoding="utf-8") as f:
-        kazuate_list = f.read().split()
-
-    try:
-        seikai = int(kazuate_list[0])
-    except ValueError:
-        await ch.edit(topic="既にあたりが出ています")
-        return
-    kazu = int(kazuate_list[1])
-
-    low = random.randint(0, hint_range[weekday])
-    high = random.randint(0, hint_range[weekday])
-    low = seikai - low
-    high = seikai + high
-    if low <= 0:
-        low = 1
-    if high >= 1000:
-        high = 999
-    text = f"{low} ~ {high}"
-    await ch.edit(topic=text)
-
-    with open("./datas/kazuate.txt", mode="w", encoding="utf-8") as f:
-        f.write(f"{seikai} {kazu+100}")
-
-
 async def kikaku(message):
     """
     企画用"""
@@ -1968,14 +1860,30 @@ async def kikaku_announcement(client1):
 
     guild = client1.get_guild(585998962050203672)
     kikaku_role = discord.utils.get(guild.roles, id=668021019700756490)
-    tousen = random.sample(kikaku_role.members, k=3)
+    tousen = random.sample(kikaku_role.members, k=9)
 
     tousen_role = discord.utils.get(guild.roles, id=669720120314167307)
-    tousen[0].add_roles(tousen_role)
-    tousen[1].add_roles(tousen_role)
-    tousen[2].add_roles(tousen_role)
 
-    embed = discord.Embed(title=":tada:おめでとう:tada:", description=f"1等: {tousen[0].mention}\n2等: {tousen[1].mention}, {tousen[2].mention}", color=0xffff00)
+    price_list = [0]
+    for i in range(8):
+        n = random.randint(0, 1344)
+        price_list.append(n)
+    price_list.append(1344)
+    price_list.sort()
+
+    give_list = []
+    s = 0
+    for i in range(9):
+        give = price_list[9-i] - price_list[8-i]
+        q, mod = divmod(give, 64)
+        give_list.append(f"{q}st+{mod}")
+        s += give
+
+    description = ""
+    for i in range(9):
+        description += f"{tousen[i].mention}: {give_list[i]}\n"
+
+    embed = discord.Embed(title=":tada:おめでとう:tada:", description=description, color=0xffff00)
     ch = client1.get_channel(586420858512343050)
-    await ch.send(content="<@&668021019700756490>", embed=embed)
+    await ch.send(content="<@&668021019700756490\>", embed=embed)
     await ch.send("**受け取り期日は2021/1/15までとします。**ただし、事情により期限内に受け取れない場合期限内に言っていただければ対応します。")

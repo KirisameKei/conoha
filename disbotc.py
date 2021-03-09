@@ -484,32 +484,6 @@ record_story.start()
 
 
 @tasks.loop(seconds=60)
-async def kazuate():
-    """
-    数当ての結果発表とリセットを発火する"""
-
-    try:
-        await client1.wait_until_ready()
-        now = datetime.datetime.now()
-
-        if now.weekday() == 2 and now.hour == 3 and now.minute == 15:
-            await kei_server.setting_kazuate(client1)
-
-        if now.weekday() == 4 and now.hour == 3 and now.minute == 15:
-            await kei_server.hint_kazuate(client1, weekday=4)
-
-        if now.weekday() == 6 and now.hour == 3 and now.minute == 15:
-            await kei_server.hint_kazuate(client1, weekday=6)
-
-        if now.weekday() == 1 and now.hour == 3 and now.minute == 15:
-            await kei_server.hint_kazuate(client1, weekday=1)
-
-    except:
-        unexpected_error()
-kazuate.start()
-
-
-@tasks.loop(seconds=60)
 async def kikaku_announcement():
     try:
         await client1.wait_until_ready()
@@ -522,6 +496,10 @@ async def kikaku_announcement():
 kikaku_announcement.start()
 
 
+client1.run(os.getenv("discord_bot_token_1"))
+
+
+"""
 Entry = namedtuple("Entry", "client event token")
 entries = [
     Entry(client=client1,event=asyncio.Event(),token=discord_bot_token_1),
@@ -550,4 +528,4 @@ loop.run_until_complete(login())
 for entry in entries:
     loop.create_task(wrapped_connect(entry))
 loop.run_until_complete(check_close())
-loop.close()
+loop.close()"""

@@ -760,8 +760,8 @@ def check_mcid_logined(mcid):
         res = requests.get(url)
         res.raise_for_status()
         soup = bs4.BeautifulSoup(res.text, "html.parser")
-        td = soup.td
-        if f"{mcid.lower()}" in f"{td}":
+        mcid_right = str(soup.td).split()[1]
+        if mcid.lower() == mcid_right.lower():
             return True
         else:
             return False

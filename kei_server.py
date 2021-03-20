@@ -1816,16 +1816,24 @@ async def kikaku(message):
         return
 
     kikaku_role = discord.utils.get(message.guild.roles, id=668021019700756490)
+
+    with open("./datas/kikaku.json", mode="r", encoding="utf-8") as f:
+        kikaku_dict = json.load(f)
+
     if message.content == "/cancel":
         if kikaku_role in message.author.roles:
             await message.author.remove_roles(kikaku_role)
+            del kikaku_dict[f"{message.author.id}"]
+            with open("./datas/kikaku.json", mode="w", encoding="utf-8") as f:
+                kikaku_json = json.dumps(kikaku_dict, indent=4)
+                f.write(kikaku_json)
             await message.channel.send(f"{message.author.name}さんがキャンセルしました")
         else:
             await message.channel.send(f"{message.author.name}さんはまだ企画に参加していません")
         return
 
     now = datetime.datetime.now()
-    finish_time = datetime.datetime(2021, 1, 1, 0, 0)
+    finish_time = datetime.datetime(2021, 3, 28, 12, 0)
     if now >= finish_time:
         await message.channel.send("現在企画は行われていません")
         return
@@ -1851,6 +1859,10 @@ async def kikaku(message):
         return
 
     await message.author.add_roles(kikaku_role)
+    kikaku_dict[f"{message.author.id}"] = mcid
+    with open("./datas/kikaku.json", mode="w", encoding="utf-8") as f:
+        kikaku_json = json.dumps(kikaku_dict, indent=4)
+        f.write(kikaku_json)
     await message.channel.send(f"{message.author.name}さんが参加しました")
 
 
@@ -1879,11 +1891,13 @@ async def kikaku_announcement(client1):
         give_list.append(f"{q}st+{mod}")
         s += give
 
+    with open("./datas/kikaku.json", mode="r", encoding="utf-8") as f:
+        kikaku_dict = json.load(f)
     description = ""
     for i in range(9):
-        description += f"{tousen[i].mention}: {give_list[i]}\n"
+        description += f"{tousen[i].mention}: {kikaku_dict[tousen[i].id]}: {give_list[i]}\n"
 
     embed = discord.Embed(title=":tada:おめでとう:tada:", description=description, color=0xffff00)
     ch = client1.get_channel(586420858512343050)
-    await ch.send(content="<@&668021019700756490\>", embed=embed)
-    await ch.send("**受け取り期日は2021/1/15までとします。**ただし、事情により期限内に受け取れない場合期限内に言っていただければ対応します。")
+    await ch.send(content="<@&668021019700756490>", embed=embed)
+    await ch.send("**受け取り期日は2021/4/30までとしますが、4/6以降はログインできる時間が限られるorログインできなくなる可能性がありますのでお早めに。**事情により期限内に受け取れない場合期限内に言っていただければ(できる限り)対応します。(最悪8月とかになるかも)")

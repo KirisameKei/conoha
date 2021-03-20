@@ -489,7 +489,7 @@ async def kikaku_announcement():
         await client1.wait_until_ready()
         now = datetime.datetime.now()
 
-        if now.month == 1 and now.day == 1 and now.hour == 0 and now.minute == 0:
+        if now.month == 3 and now.day == 28 and now.hour == 12 and now.minute == 0:
             await kei_server.kikaku_announcement(client1)
     except:
         unexpected_error()

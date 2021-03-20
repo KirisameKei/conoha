@@ -1898,9 +1898,12 @@ async def kikaku_announcement(client1):
         kikaku_dict = json.load(f)
     description = ""
     for i in range(9):
-        description += f"{tousen[i].mention}: {kikaku_dict[tousen[i].id]}: {give_list[i]}\n"
+        tousen[i].add_roles(tousen_role)
+        mcid = kikaku_dict[f"{tousen[i].id}"]
+        mcid = mcid.replace("_", "\_")
+        description += f"{tousen[i].mention}: {mcid}: {give_list[i]}\n"
 
-    embed = discord.Embed(title="~~:tada:おめでとう:tada:~~これは動作テストです", description=description, color=0xffff00)
+    embed = discord.Embed(title=":tada:おめでとう:tada:", description=description, color=0xffff00)
     ch = client1.get_channel(586420858512343050)
-    await ch.send(content="\<\@\&\\668021019700756490\>", embed=embed)
-    await ch.send("**受け取り期日は2021/4/30までとしますが、4/6以降はログインできる時間が限られるorログインできなくなる可能性がありますのでお早めに。**事情により期限内に受け取れない場合期限内に言っていただければ(できる限り)対応します。(最悪8月とかになるかも)")
+    await ch.send(content="<@&668021019700756490>", embed=embed)
+    await ch.send("**受け取り期日は2021/4/30までとしますが、4/6以降はログインできる時間が限られるorログインできなくなる可能性がありますのでお早めに。**事情により期限内に受け取れない場合期限内に言っていただければ(できる限り)対応します。(最悪8月とかになるかも)\nmineでの受け渡しには対応いたしかねます。")

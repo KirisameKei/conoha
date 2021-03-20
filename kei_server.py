@@ -180,6 +180,9 @@ async def on_message(client1, message):
         await global_notice(client1, message)
 
     if message.content == "/kikaku_test":
+        if not message.author.id == 523303776120209408:
+            await message.channel.send("何様のつもり？")
+            return
         await kikaku_announcement(client1)
 
     #if message.content == "/issue":

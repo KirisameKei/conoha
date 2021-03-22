@@ -1293,6 +1293,7 @@ async def record_story(client1):
     ch = client1.get_channel(762546731417731073)
     await ch.send("----キリトリ----")
     ch = client1.get_channel(762546959138816070)
+    await ch.purge()
     await ch.send("----キリトリ----")
 
 

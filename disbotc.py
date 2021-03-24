@@ -496,7 +496,7 @@ async def kikaku_announcement():
 kikaku_announcement.start()
 
 
-client1.run(os.getenv("discord_bot_token_1"))
+client1.run(os.getenv("discord_bot_token_2"))
 
 
 """

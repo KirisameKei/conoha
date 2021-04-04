@@ -439,7 +439,7 @@ async def add_interest():
 
     except:
         unexpected_error()
-add_interest.start()
+#add_interest.start()
 
 
 @tasks.loop(seconds=60)
@@ -493,7 +493,7 @@ async def kikaku_announcement():
             await kei_server.kikaku_announcement(client1)
     except:
         unexpected_error()
-kikaku_announcement.start()
+#kikaku_announcement.start()
 
 
 client1.run(os.getenv("discord_bot_token_1"))

@@ -409,7 +409,7 @@ async def mcid_check():
 
     except:
         unexpected_error()
-mcid_check.start()
+#mcid_check.start()
 
 
 @tasks.loop(seconds=60)

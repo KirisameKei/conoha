@@ -15,7 +15,7 @@ async def on_member_join(client1, member):
 
     try:
         if user_data_dict[f"{member.id}"]["ban"]:
-            join_leave_notice_ch = client1.get_channel(588224929300742154)
+            join_leave_notice_ch = client1.get_channel(709307324170240079)
             await member.guild.kick(member)
             await join_leave_notice_ch.send(f"{member.mention}が{member.guild.name}に参加しようとしましたが失敗しました")
     except KeyError:

@@ -30,10 +30,23 @@ where_from = os.getenv("where_from")
 error_notice_webhook_url = os.getenv("error_notice_webhook")
 
 
-def unexpected_error():
+def unexpected_error(msg=None):
     """
     予期せぬエラーが起きたときの対処
     エラーメッセージ全文と発生時刻を通知"""
+
+    try:
+        if msg is not None:
+            content = (
+                f"{msg.author}\n"
+                f"{msg.content}\n"
+                f"{msg.channel.name}\n"
+            )
+        else:
+            content = ""
+    except:
+        unexpected_error()
+        return
 
     now = datetime.datetime.now().strftime("%H:%M") #今何時？
     error_msg = f"```\n{traceback.format_exc()}```" #エラーメッセージ全文
@@ -43,7 +56,7 @@ def unexpected_error():
         "embeds": [ #エラー内容・発生時間まとめ
             {
                 "title": "エラーが発生しました",
-                "description": error_msg,
+                "description": content + error_msg,
                 "color": 0xff0000,
                 "footer": {
                     "text": now
@@ -58,7 +71,7 @@ def unexpected_error():
 async def on_ready():
     try:
         login_notice_ch = client1.get_channel(595072269483638785)
-        with open("./datas/version.txt") as f:
+        with open("./datas/version.txt", mode="r", encoding="utf-8") as f:
             version = f.read()
         await login_notice_ch.send(f"{client1.user.name}がログインしました(from: {where_from})\nversion: {version}")
 
@@ -343,7 +356,7 @@ async def on_message(message):
         except discord.errors.Forbidden:
             await message.channel.send("権限がありません")
     except:
-        unexpected_error()
+        unexpected_error(msg=message)
 
 
 @client1.event

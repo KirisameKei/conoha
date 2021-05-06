@@ -252,11 +252,11 @@ async def login_bonus(message):
     if message.author.bot:
         return
 
-    msg = jaconv.h2z(message.content, ignore="", kana=True, ascii=True, digit=True) #全て全角にする
+    msg = jaconv.h2z(message.clean_content, ignore="", kana=True, ascii=True, digit=True) #全て全角にする
     msg = jaconv.z2h(msg, ignore="", kana=False, ascii=True, digit=True) #英数のみ半角にする
     msg = jaconv.kata2hira(msg, ignore="") #全てひらがなにする
     msg = msg.lower() #小文字にする
-    msg = msg.replace(" ", "").replace("\n", "").replace("゛", "")\
+    msg = msg.replace(" ", "").replace("\n", "").replace("゛", "").replace("​", "")\
         .replace("っ", "").replace("-", "").replace("ー", "") #邪魔な装飾を消す(全角スペースはz2hで消えてる)
     msg = msg.replace("chan", "ちゃん").replace("tyan", "ちゃん").replace("tan", "たん") #英語でのちゃん付けを変換
     msg = msg.replace("ma", "ま").replace("ri", "り").replace("sa", "さ") #ローマ字をひらがなに変換

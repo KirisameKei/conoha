@@ -1,12 +1,8 @@
-import asyncio
 import datetime
-import io
 import json
 import os
-import random
-import subprocess
 import traceback
-from collections import namedtuple
+#from collections import namedtuple
 
 import aiohttp
 import discord
@@ -203,7 +199,7 @@ async def on_guild_join(guild):
                 return
 
         title = "よろしくお願いします!!"
-        description = f"初めましての方は初めまして、そうでない方はまたお会いしましたね。<@!523303776120209408>制作の{client1.user.name}です。\n"
+        description = f"初めましての方は初めまして、そうでない方はまたお会いしましたね。けい制作の{client1.user.name}です。\n"
         description += f"このbotを{guild.name}に導入していただきありがとうございます。\n"
         description += "皆様にお願いしたいことがあります。このbotに極度に負荷をかけるような行為をしないでください。\n"
         description += "バグ、不具合等問題がありましたら`/bug_report`コマンドで報告ができます\n"
@@ -422,7 +418,7 @@ async def mcid_check():
 
     except:
         unexpected_error()
-mcid_check.start()
+#mcid_check.start()
 
 
 @tasks.loop(seconds=60)

@@ -182,6 +182,8 @@ async def on_message(client1, message):
     if message.content == "/kikaku_test":
         if not message.author.id == 523303776120209408:
             await message.channel.send("何様のつもり？")
+            doM_role = discord.utils.get(message.guild.roles, id=616212704818102275)
+            await message.author.add_roles(doM_role)
             return
         await kikaku_announcement(client1)
 
@@ -413,6 +415,8 @@ async def crd_pt(message, user_id):
 
     if not message.author.id == 523303776120209408:
         await message.channel.send("何様のつもり？")
+        doM_role = discord.utils.get(message.guild.roles, id=616212704818102275)
+        await message.author.add_roles(doM_role)
         return
 
     member = message.guild.get_member(user_id)
@@ -472,6 +476,8 @@ async def edit_pt(message):
 
     if not message.author.id == 523303776120209408:
         await message.channel.send("何様のつもり？")
+        doM_role = discord.utils.get(message.guild.roles, id=616212704818102275)
+        await message.author.add_roles(doM_role)
         return
 
     operation = message.content.split()[1]
@@ -518,6 +524,8 @@ async def before_ban(client1, message):
 
     if not message.author.id == 523303776120209408:
         await message.channel.send("何様のつもり？")
+        doM_role = discord.utils.get(message.guild.roles, id=616212704818102275)
+        await message.author.add_roles(doM_role)
         return
 
     try:
@@ -583,6 +591,8 @@ async def unban(client1, message):
 
     if not message.author.id == 523303776120209408:
         await message.channel.send("何様のつもり？")
+        doM_role = discord.utils.get(message.guild.roles, id=616212704818102275)
+        await message.author.add_roles(doM_role)
         return
 
     try:
@@ -931,7 +941,7 @@ async def edit_mcid(message):
     admin_role = discord.utils.get(message.guild.roles, id=585999549055631408)
     if not (admin_role in message.author.roles):
         await message.channel.send("何様のつもり？")
-        doM_role = discord.utils.get(message.guild.roles, id= 616212704818102275)
+        doM_role = discord.utils.get(message.guild.roles, id=616212704818102275)
         await message.author.add_roles(doM_role)
         return
 
@@ -1522,7 +1532,9 @@ async def leave_guild(message, client1):
     サーバから抜ける"""
 
     if not message.author.id == 523303776120209408:
-        await message.channel.send("このコマンドは使用できません")
+        await message.channel.send("何様のつもり？")
+        doM_role = discord.utils.get(message.guild.roles, id=616212704818102275)
+        await message.author.add_roles(doM_role)
         return
 
     try:

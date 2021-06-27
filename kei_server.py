@@ -137,6 +137,9 @@ async def on_message(client1, message):
     if message.content.startswith("/unban "):
         await unban(client1, message)
 
+    if message.content.startswith("/delete_user_data "):
+        await delete_user_data(client1, message)
+
     if message.content == "/mypt":
         await mypt(message)
 
@@ -144,7 +147,7 @@ async def on_message(client1, message):
         await edit_mcid(message)
 
     if message.content.startswith("/user_data"):
-        await user_data(client1, message)
+        await user_data(message)
 
     if message.content.startswith("/ranking "):
         await ranking(client1, message)
@@ -646,6 +649,67 @@ async def unban(client1, message):
         await message.channel.send(f"{baned_user.name}の事前BANを解除しました")
 
 
+async def delete_user_data(client1, message):
+    """
+    ユーザーデータのすべてを抹消する"""
+
+    if not message.author.id == 523303776120209408:
+        await message.channel.send("何様のつもり？")
+        doM_role = discord.utils.get(message.guild.roles, id=616212704818102275)
+        await message.author.add_roles(doM_role)
+        return
+
+    try:
+        user_id = int(message.content.split()[1])
+    except ValueError:
+        await message.channel.send("不正な引数です")
+        return
+
+    with open("./datas/user_data.json", mode="r", encoding="utf-8") as f:
+        user_data_dict = json.load(f)
+
+    try:
+        user_data = user_data_dict[f"{user_id}"]
+    except KeyError:
+        await message.channel.send("そのデータは登録されていません")
+        return
+
+    try:
+        delete_user = await client1.fetch_user(user_id)
+    except discord.errors.NotFound:
+        await message.channel.send("IDが間違っていますがデータはあるので消しておきます(どうゆう状況だよおい)")
+        delete_user_name = "None"
+    else:
+        user_info_embed = discord.Embed(title="以下のユーザーのデータをすべて抹消しますか？", description="はい(抹消): 👍\nいいえ(ミス): 👎", color=0x000000)
+        user_info_embed.set_thumbnail(url=delete_user.avatar_url)
+        user_info_embed.add_field(name=".", value=delete_user.name)
+        msg = await message.channel.send(embed=user_info_embed)
+        await msg.add_reaction("👍")
+        await msg.add_reaction("👎")
+        def check(reaction, user):
+            return user == message.author and (str(reaction.emoji) == "👍" or str(reaction.emoji) == "👎")
+        try:
+            reaction, user = await client1.wait_for("reaction_add", check=check, timeout=60)
+        except asyncio.TimeoutError:
+            await message.channel.send("タイムアウトしました。最初からやり直してください")
+            return
+
+        else:
+            if str(reaction.emoji) == "👎":
+                await message.channel.send("キャンセルしました")
+                return
+            else:
+                delete_user_name = delete_user.name
+
+    del user_data_dict[f"{user_id}"]
+
+    with open("./datas/user_data.json", mode="w", encoding="utf-8") as f:
+        user_data_json = json.dumps(user_data_dict, indent=4)
+        f.write(user_data_json)
+
+    await message.channel.send(f"{delete_user_name}のデータを全て抹消しました")
+
+
 async def mypt(message):
     """
     自分のpt保有量を確認する関数"""
@@ -662,7 +726,7 @@ async def mypt(message):
     await message.channel.send(f"{message.author.name}さんは{had_pt}pt保有しています。")
 
 
-async def user_data(client1, message):
+async def user_data(message):
     """
     けい鯖のユーザーのデータを表示する関数"""
 

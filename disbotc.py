@@ -413,12 +413,12 @@ async def mcid_check():
         now = datetime.datetime.now()
         weekday = datetime.datetime.now().weekday()
 
-        if weekday == 4 and now.hour == 18 and now.minute == 0:
+        if weekday == 2 and now.hour == 20 and now.minute == 0:
             await kei_server.check_mcid_exist_now(client1)
 
     except:
         unexpected_error()
-#mcid_check.start()
+mcid_check.start()
 
 
 @tasks.loop(seconds=60)

@@ -1913,10 +1913,12 @@ async def kikaku(message):
         return
 
     now = datetime.datetime.now()
-    finish_time = datetime.datetime(2021, 3, 28, 12, 0)
+    finish_time = datetime.datetime(2021, 8, 8, 23, 59)
     if now >= finish_time:
         await message.channel.send("現在企画は行われていません")
         return
+
+    return
 
     if kikaku_role in message.author.roles:
         await message.channel.send(f"{message.author.name}さんは既に参加しています")

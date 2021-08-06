@@ -1126,7 +1126,9 @@ async def check_mcid_exist_now(client1):
     if len(not_exist_mcid_list) == 0:
         return
 
-    alart_msg = f"{alart_msg}\nMCIDを変更しましたか？以下のMCIDは現在無効です。<#640833025822949387>で過去のMCID→現在のMCIDを入力してください\n{not_exist_mcid_list}"
+    not_exist_mcid_list_str = str(not_exist_mcid_list)
+    not_exist_mcid_list_str = not_exist_mcid_list_str.replace("_", "\_")
+    alart_msg = f"{alart_msg}\nMCIDを変更しましたか？以下のMCIDは現在無効です。<#640833025822949387>で過去のMCID→現在のMCIDを入力してください\n{not_exist_mcid_list_str}"
     alart_ch = client1.get_channel(585999375952642067)
     await alart_ch.send(alart_msg)
 
@@ -1335,6 +1337,9 @@ async def record_story(client1):
     with open("./datas/story.txt", mode="r", encoding="utf-8") as f:
         story = f.read()
 
+    if story == "":
+        story = "今週は物語は書かれませんでした・・・"
+
     while True:
         if len(story) > 2000:
             embed = discord.Embed(description=story[:2000], color=0x00ffff)
@@ -1347,6 +1352,9 @@ async def record_story(client1):
 
     with open("./datas/story_secret.txt", mode="r", encoding="utf-8") as f:
         story = f.read()
+
+    if story == "":
+        story = "今週は物語は書かれませんでした・・・"
 
     while True:
         if len(story) > 2000:

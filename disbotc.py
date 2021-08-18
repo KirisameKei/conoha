@@ -13,6 +13,7 @@ import common
 import custom_commands_exe
 import emoji_server
 import iroha
+import iroha_MC
 import kei_server
 import muhou
 import server_log
@@ -96,15 +97,17 @@ async def on_guild_channel_create(channel):
         #ログ取りのための部分
         if type(channel) == discord.CategoryChannel or type(channel) == discord.VoiceChannel:
             return
-        if channel.guild.id == 585998962050203672 or channel.guild.id == 604945424922574848: #けい鯖、いろは鯖なら
+        if channel.guild.id in (585998962050203672, 604945424922574848, 876143248471621652): #けい鯖、いろは鯖(MC)、いろは鯖なら
             with open("./datas/channels_id.json", mode="r") as f:
                 channels_id_dict = json.load(f)
             if channel.guild.id == 585998962050203672: #けい鯖
                 log_server = client1.get_guild(707794528848838676)
-            if channel.guild.id == 604945424922574848: #いろは鯖
-                log_server = client1.get_guild(660445544296218650)
+            elif channel.guild.id == 604945424922574848: #いろは鯖(MC)
+                log_server = client1.get_channel(877458495958569010) #サーバという名前だがカテゴリ
+            elif channel.guild.id == 876143248471621652: #いろは鯖
+                log_server = client1.get_channel(877453174481502241) #サーバという名前だがカテゴリ
 
-            new_ch = await log_server.create_text_channel(name=channel.name, position=channel.position)
+            new_ch = await log_server.create_text_channel(name=channel.name)
             channels_id_dict[f"{channel.id}"] = new_ch.id
 
             with open("./datas/channels_id.json", mode="w") as f:
@@ -134,7 +137,7 @@ async def on_guild_channel_update(before, after):
             ch_notice_ch = client1.get_channel(682732694768975884)
             await ch_notice_ch.send(embed=ch_embed)
 
-        if before.guild.id == 585998962050203672 or before.guild.id == 604945424922574848: #けい鯖、いろは鯖なら
+        if before.guild.id in (585998962050203672, 604945424922574848, 876143248471621652): #けい鯖、いろは鯖(MC)、いろは鯖なら
             if type(before) == discord.CategoryChannel or type(before) == discord.VoiceChannel:
                 return
 
@@ -147,7 +150,7 @@ async def on_guild_channel_update(before, after):
                 await notice_ch.send(f"<@523303776120209408>\n{guild_name}:{before.name}→{after.name}\n{after.mention}")
             else:
                 log_channel = client1.get_channel(log_channel_id)
-                await log_channel.edit(name=after.name, position=after.position)
+                await log_channel.edit(name=after.name)
 
     except:
         unexpected_error()
@@ -171,7 +174,7 @@ async def on_guild_channel_delete(channel):
         ch_embed.set_footer(text=now, icon_url=channel.guild.icon_url)
         ch_notice_ch = client1.get_channel(682732694768975884)
         await ch_notice_ch.send(embed=ch_embed)
-        if channel.guild.id == 585998962050203672 or channel.guild.id == 604945424922574848: #けい鯖、いろは鯖なら
+        if channel.guild.id in (585998962050203672, 604945424922574848, 876143248471621652): #けい鯖、いろは鯖(MC)、いろは鯖なら
             with open("./datas/channels_id.json", mode="r") as f:
                 channels_id_dict = json.load(f)
             try:
@@ -262,10 +265,10 @@ async def on_member_join(member):
         if member.guild.id == 585998962050203672:
             await kei_server.on_member_join(client1, member)
 
-        if member.guild.id == 604945424922574848:
-            await iroha.on_member_join(client1, member)
+        elif member.guild.id == 604945424922574848:
+            await iroha_MC.on_member_join(client1, member)
 
-        if member.guild.id == 587909823665012757:
+        elif member.guild.id == 587909823665012757:
             await muhou.on_member_join(client1, member)
 
     except:
@@ -323,14 +326,14 @@ async def on_message(message):
                 if not message.author.bot:
                     await message.channel.send(where_from)
 
-            if message.guild.id == 585998962050203672 or message.guild.id == 604945424922574848: #けい鯖、いろは鯖なら
+            if message.guild.id in (585998962050203672, 604945424922574848, 876143248471621652): #けい鯖、いろは鯖(MC)、いろは鯖なら
                 await server_log.server_log_on_message(client1, message)
 
             if message.guild.id == 585998962050203672:
                 await kei_server.on_message(client1, message)
 
             if message.guild.id == 604945424922574848:
-                await iroha.on_message(client1, message)
+                await iroha_MC.on_message(client1, message)
 
             if message.content.startswith("/set_notice_ch"):
                 await common.set_notice_ch(message)
@@ -362,7 +365,7 @@ async def on_message_edit(before, after):
             if before.guild is None:
                 return
 
-            if before.guild.id == 585998962050203672 or before.guild.id == 604945424922574848: #けい鯖、いろは鯖なら
+            if before.guild.id in (585998962050203672, 604945424922574848, 876143248471621652): #けい鯖、いろは鯖(MC)、いろは鯖なら
                 await server_log.server_log_on_message_update(client1, before, after)
 
         except (RuntimeError, aiohttp.client_exceptions.ServerDisconnectedError):
@@ -378,7 +381,7 @@ async def on_message_delete(message):
             if message.guild is None:
                 return
 
-            if message.channel.guild.id == 585998962050203672 or message.channel.guild.id == 604945424922574848: #けい鯖、いろは鯖なら
+            if message.guild.id in (585998962050203672, 604945424922574848, 876143248471621652): #けい鯖、いろは鯖(MC)、いろは鯖なら
                 await server_log.server_log_on_message_delete(client1, message)
 
         except (RuntimeError, aiohttp.client_exceptions.ServerDisconnectedError):
@@ -458,7 +461,7 @@ async def delete_login_record():
         now = datetime.datetime.now()
 
         if now.hour == 0 and now.minute == 0:
-            await iroha.delete_login_record()
+            await iroha_MC.delete_login_record()
 
     except:
         unexpected_error()
@@ -472,7 +475,7 @@ async def change_login_record():
         now = datetime.datetime.now()
 
         if now.minute == 30:
-            await iroha.change_login_record(client1)
+            await iroha_MC.change_login_record(client1)
 
     except:
         unexpected_error()

@@ -265,8 +265,8 @@ async def on_member_join(member):
         if member.guild.id == 585998962050203672:
             await kei_server.on_member_join(client1, member)
 
-        elif member.guild.id == 604945424922574848:
-            await iroha_MC.on_member_join(client1, member)
+        #elif member.guild.id == 604945424922574848:
+        #    await iroha_MC.on_member_join(client1, member)
 
         elif member.guild.id == 587909823665012757:
             await muhou.on_member_join(client1, member)

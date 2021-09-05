@@ -1905,28 +1905,19 @@ async def kikaku(message):
 
     kikaku_role = discord.utils.get(message.guild.roles, id=668021019700756490)
 
-    with open("./datas/kikaku.json", mode="r", encoding="utf-8") as f:
-        kikaku_dict = json.load(f)
-
     if message.content == "/cancel":
         if kikaku_role in message.author.roles:
             await message.author.remove_roles(kikaku_role)
-            del kikaku_dict[f"{message.author.id}"]
-            with open("./datas/kikaku.json", mode="w", encoding="utf-8") as f:
-                kikaku_json = json.dumps(kikaku_dict, indent=4)
-                f.write(kikaku_json)
             await message.channel.send(f"{message.author.name}さんがキャンセルしました")
         else:
             await message.channel.send(f"{message.author.name}さんはまだ企画に参加していません")
         return
 
     now = datetime.datetime.now()
-    finish_time = datetime.datetime(2021, 8, 8, 23, 59)
+    finish_time = datetime.datetime(2021, 11, 18, 15, 0)
     if now >= finish_time:
         await message.channel.send("現在企画は行われていません")
         return
-
-    return
 
     if kikaku_role in message.author.roles:
         await message.channel.send(f"{message.author.name}さんは既に参加しています")
@@ -1949,10 +1940,6 @@ async def kikaku(message):
         return
 
     await message.author.add_roles(kikaku_role)
-    kikaku_dict[f"{message.author.id}"] = mcid
-    with open("./datas/kikaku.json", mode="w", encoding="utf-8") as f:
-        kikaku_json = json.dumps(kikaku_dict, indent=4)
-        f.write(kikaku_json)
     await message.channel.send(f"{message.author.name}さんが参加しました")
 
 
@@ -1962,10 +1949,17 @@ async def kikaku_announcement(client1):
 
     guild = client1.get_guild(585998962050203672)
     kikaku_role = discord.utils.get(guild.roles, id=668021019700756490)
-    tousen = random.sample(kikaku_role.members, k=9)
+    tousen = random.sample(kikaku_role.members, k=3)
 
     tousen_role = discord.utils.get(guild.roles, id=669720120314167307)
 
+    description = ""
+    for mem in tousen:
+        await mem.add_roles(tousen_role)
+        description += f"{mem.mention}\n"
+
+    '''
+    総額いくらを当選人数人でランダムに分配するときに使う
     price_list = [0]
     for i in range(8):
         n = random.randint(0, 1344)
@@ -1981,16 +1975,14 @@ async def kikaku_announcement(client1):
         give_list.append(f"{q}st+{mod}")
         s += give
 
-    with open("./datas/kikaku.json", mode="r", encoding="utf-8") as f:
-        kikaku_dict = json.load(f)
     description = ""
     for i in range(9):
         tousen[i].add_roles(tousen_role)
         mcid = kikaku_dict[f"{tousen[i].id}"]
         mcid = mcid.replace("_", "\_")
-        description += f"{tousen[i].mention}: {mcid}: {give_list[i]}\n"
+        description += f"{tousen[i].mention}: {mcid}: {give_list[i]}\n" '''
 
     embed = discord.Embed(title=":tada:おめでとう:tada:", description=description, color=0xffff00)
     ch = client1.get_channel(586420858512343050)
     await ch.send(content="<@&668021019700756490>", embed=embed)
-    await ch.send("**受け取り期日は2021/4/30までとしますが、4/6以降はログインできる時間が限られるorログインできなくなる可能性がありますのでお早めに。**事情により期限内に受け取れない場合期限内に言っていただければ(できる限り)対応します。(最悪8月とかになるかも)\nmineでの受け渡しには対応いたしかねます。")
+    await ch.send("**受け取り期日は2021/11/30までとします\n**当選者で事情により期限内に受け取れない場合は期限内に言っていただければ対応します。参加賞は期限内に受け取ってください。\n参加賞受け取り希望の方でmineでの受け取りを希望する場合はs3にてmineでの受け渡しも可能とします。\n受け取り辞退をする場合<#665487669953953804>にて`/cancel`をしてください。")

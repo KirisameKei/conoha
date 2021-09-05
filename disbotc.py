@@ -501,11 +501,11 @@ async def kikaku_announcement():
         await client1.wait_until_ready()
         now = datetime.datetime.now()
 
-        if now.month == 3 and now.day == 28 and now.hour == 12 and now.minute == 0:
+        if now.month == 11 and now.day == 18 and now.hour == 15 and now.minute == 0:
             await kei_server.kikaku_announcement(client1)
     except:
         unexpected_error()
-#kikaku_announcement.start()
+kikaku_announcement.start()
 
 
 client1.run(os.getenv("discord_bot_token_1"))

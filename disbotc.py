@@ -12,7 +12,6 @@ from discord.ext import tasks
 import common
 import custom_commands_exe
 import emoji_server
-import iroha
 import iroha_MC
 import kei_server
 import muhou

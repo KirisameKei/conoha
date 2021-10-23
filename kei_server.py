@@ -36,15 +36,6 @@ async def on_member_join(client1, member):
             await join_leave_notice_ch.send(f"{member.mention}が{member.guild.name}に参加しようとしましたが失敗しました")
             return
 
-        if not len(user_data["role"]) == 0:
-            role_name = ""
-            for role_id in user_data["role"]:
-                role = discord.utils.get(member.guild.roles, id=role_id)
-                await member.add_roles(role)
-                role_name += f"{role.name}, "
-
-            await join_leave_notice_ch.send(f"{member.name}さんは過去に以下の役職を保有していたため付与しました```\n{role_name}```")
-
     new_role = discord.utils.get(member.guild.roles, id=621641465105481738)
     await member.add_roles(new_role)
 
@@ -58,6 +49,15 @@ JE版整地鯖にログインしたことのない方は<@523303776120209408>の
 **/accept**を実行してください。新規役職が外れます", inline=False)
     info_embed.add_field(name="最後に", value="お楽しみください", inline=False)
     await infomation_ch.send(content=f"{member.mention}", embed=info_embed)
+
+    if not len(user_data["role"]) == 0:
+        role_name = ""
+        for role_id in user_data["role"]:
+            role = member.guild.get_role(role_id)
+            await member.add_roles(role)
+            role_name += f"{role.name}, "
+
+        await join_leave_notice_ch.send(f"{member.name}さんは過去に以下の役職を保有していたため付与しました```\n{role_name}```")
 
 
 async def on_member_remove(client1, member):
@@ -162,7 +162,7 @@ async def on_message(client1, message):
         await marichan_invite(message)
 
     if message.content == "/accept":
-        await accept(message)
+        await accept(message, client1)
 
     if message.content == "/version":
         await version(message)
@@ -1208,13 +1208,17 @@ async def marichan_invite(message):
     #await message.channel.send("DMに招待urlを送信しました。管理者権限を持っているサーバに入れられます。")
 
 
-async def accept(message):
+async def accept(message, client1):
     """
     新規役職剥奪用関数"""
 
     new_role = discord.utils.get(message.guild.roles, id=621641465105481738)
     accept_able_role = discord.utils.get(message.guild.roles, id=626062897633689620)
     crafter_role = discord.utils.get(message.guild.roles, id=586123363513008139)
+
+    new_role = message.guild.get_role(673349311228280862) #投票通知
+    accept_able_role = message.guild.get_role(774551525083054090) #ミニゲーム
+    crafter_role = message.guild.get_role(586123567146729475) #シュータ
 
     if not new_role in message.author.roles:
         await message.channel.send("もう新規役職付いてないよ^^")
@@ -1228,12 +1232,37 @@ async def accept(message):
         await message.channel.send("説明読みました？チャンネル違いますよ？")
         return
 
-    await message.author.remove_roles(new_role)
-    await message.author.remove_roles(accept_able_role)
-    await message.author.add_roles(crafter_role)
-    await message.channel.send(f"改めまして{message.author.name}さんようこそ{message.guild.name}へ！\n\
+    await message.channel.send("次の文章をひらがなで書いてください。\n一月一日日曜日、今日は元日です。") #たち、にち、び、う、じつ
+
+    def check(m):
+        return m.author == message.author
+
+    for i in range(3):
+        try:
+            reply = await client1.wait_for("message", check=check, timeout=120)
+        except asyncio.TimeoutError:
+            await message.channel.send("タイムアウトしました。acceptコマンドを打つところからやり直してください。")
+            return
+        answer_filter = re.compile(r"いちがつ(ついたち|いちにち)にちようび(、|,|)きょうはがんじつです(。|.|)")
+        if answer_filter.fullmatch(reply.content):
+            await message.author.remove_roles(new_role)
+            await message.author.remove_roles(accept_able_role)
+            await message.author.add_roles(crafter_role)
+            await message.channel.send(
+                f"改めまして{message.author.name}さんようこそ{message.guild.name}へ！\n\
 <#664286990677573680>に自分がほしい役職があったらぜひ付けてみてください！\n\
-もしよろしければ<#586571234276540449>もしていただけると嬉しいです！")
+もしよろしければ<#586571234276540449>もしていただけると嬉しいです！"
+            )
+            return
+        else:
+            if i != 2:
+                await message.channel.send(f"そうは読まないと思います。もう一度書いてみてください。")
+
+    await message.channel.send(
+        "3回間違えました。You made mistake 3 times.\n"
+"日本語のお勉強を頑張りましょう。Please study Japanese.\n"
+'日本語が分かるようになったら再度acceptしてください。Type "/accept" when you can understand Japanese.'
+    )
 
 
 async def ranking(client1, message):

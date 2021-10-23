@@ -1212,13 +1212,9 @@ async def accept(message, client1):
     """
     新規役職剥奪用関数"""
 
-    new_role = discord.utils.get(message.guild.roles, id=621641465105481738)
-    accept_able_role = discord.utils.get(message.guild.roles, id=626062897633689620)
-    crafter_role = discord.utils.get(message.guild.roles, id=586123363513008139)
-
-    new_role = message.guild.get_role(673349311228280862) #投票通知
-    accept_able_role = message.guild.get_role(774551525083054090) #ミニゲーム
-    crafter_role = message.guild.get_role(586123567146729475) #シュータ
+    new_role = message.guild.get_role(621641465105481738)
+    accept_able_role = message.guild.get_role(626062897633689620)
+    crafter_role = message.guild.get_role(586123363513008139)
 
     if not new_role in message.author.roles:
         await message.channel.send("もう新規役職付いてないよ^^")

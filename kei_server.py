@@ -57,7 +57,7 @@ JE版整地鯖にログインしたことのない方は<@523303776120209408>の
             await member.add_roles(role)
             role_name += f"{role.name}, "
 
-        await join_leave_notice_ch.send(f"{member.name}さんは過去に以下の役職を保有していたため付与しました```\n{role_name}```")
+        await infomation_ch.send(f"{member.name}さんは過去に以下の役職を保有していたため付与しました```\n{role_name}```")
 
 
 async def on_member_remove(client1, member):
@@ -1228,7 +1228,7 @@ async def accept(message, client1):
         await message.channel.send("説明読みました？チャンネル違いますよ？")
         return
 
-    await message.channel.send("次の文章をひらがなで書いてください。\n一月一日日曜日、今日は元日です。") #たち、にち、び、う、じつ
+    await message.channel.send("次の文章をひらがなで書いてください。\n一月一日日曜日、今日は元日です。")
 
     def check(m):
         return m.author == message.author

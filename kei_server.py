@@ -22,6 +22,7 @@ async def on_member_join(client1, member):
     with open("./datas/user_data.json", mode="r") as f:
         user_data_dict = json.load(f)
 
+    first_join = False
     try:
         user_data = user_data_dict[f"{member.id}"]
     except KeyError:
@@ -29,6 +30,7 @@ async def on_member_join(client1, member):
         with open("./datas/user_data.json", mode="w") as f:
             user_data_json = json.dumps(user_data_dict, indent=4)
             f.write(user_data_json)
+            first_join = True
     else:
         join_leave_notice_ch = client1.get_channel(709307324170240079)
         if user_data["ban"]:
@@ -50,14 +52,15 @@ JE版整地鯖にログインしたことのない方は<@523303776120209408>の
     info_embed.add_field(name="最後に", value="お楽しみください", inline=False)
     await infomation_ch.send(content=f"{member.mention}", embed=info_embed)
 
-    if not len(user_data["role"]) == 0:
-        role_name = ""
-        for role_id in user_data["role"]:
-            role = member.guild.get_role(role_id)
-            await member.add_roles(role)
-            role_name += f"{role.name}, "
+    if not first_join:
+        if not len(user_data["role"]) == 0:
+            role_name = ""
+            for role_id in user_data["role"]:
+                role = member.guild.get_role(role_id)
+                await member.add_roles(role)
+                role_name += f"{role.name}, "
 
-        await infomation_ch.send(f"{member.name}さんは過去に以下の役職を保有していたため付与しました```\n{role_name}```")
+            await infomation_ch.send(f"{member.name}さんは過去に以下の役職を保有していたため付与しました```\n{role_name}```")
 
 
 async def on_member_remove(client1, member):
@@ -185,7 +188,7 @@ async def on_message(client1, message):
     if message.content == "/kikaku_test":
         if not message.author.id == 523303776120209408:
             await message.channel.send("何様のつもり？")
-            doM_role = discord.utils.get(message.guild.roles, id=616212704818102275)
+            doM_role = message.guild.get_role(616212704818102275)
             await message.author.add_roles(doM_role)
             return
         await kikaku_announcement(client1)
@@ -418,7 +421,7 @@ async def crd_pt(message, user_id):
 
     if not message.author.id == 523303776120209408:
         await message.channel.send("何様のつもり？")
-        doM_role = discord.utils.get(message.guild.roles, id=616212704818102275)
+        doM_role = message.guild.get_role(616212704818102275)
         await message.author.add_roles(doM_role)
         return
 
@@ -479,7 +482,7 @@ async def edit_pt(message):
 
     if not message.author.id == 523303776120209408:
         await message.channel.send("何様のつもり？")
-        doM_role = discord.utils.get(message.guild.roles, id=616212704818102275)
+        doM_role = message.guild.get_role(616212704818102275)
         await message.author.add_roles(doM_role)
         return
 
@@ -527,7 +530,7 @@ async def before_ban(client1, message):
 
     if not message.author.id == 523303776120209408:
         await message.channel.send("何様のつもり？")
-        doM_role = discord.utils.get(message.guild.roles, id=616212704818102275)
+        doM_role = message.guild.get_role(616212704818102275)
         await message.author.add_roles(doM_role)
         return
 
@@ -594,7 +597,7 @@ async def unban(client1, message):
 
     if not message.author.id == 523303776120209408:
         await message.channel.send("何様のつもり？")
-        doM_role = discord.utils.get(message.guild.roles, id=616212704818102275)
+        doM_role = message.guild.get_role(616212704818102275)
         await message.author.add_roles(doM_role)
         return
 
@@ -655,7 +658,7 @@ async def delete_user_data(client1, message):
 
     if not message.author.id == 523303776120209408:
         await message.channel.send("何様のつもり？")
-        doM_role = discord.utils.get(message.guild.roles, id=616212704818102275)
+        doM_role = message.guild.get_role(616212704818102275)
         await message.author.add_roles(doM_role)
         return
 
@@ -1005,7 +1008,7 @@ async def edit_mcid(message):
     admin_role = discord.utils.get(message.guild.roles, id=585999549055631408)
     if not (admin_role in message.author.roles):
         await message.channel.send("何様のつもり？")
-        doM_role = discord.utils.get(message.guild.roles, id=616212704818102275)
+        doM_role = message.guild.get_role(616212704818102275)
         await message.author.add_roles(doM_role)
         return
 
@@ -1573,7 +1576,7 @@ async def send_zip_data(message):
 
     if not message.author.id == 523303776120209408:
         await message.channel.send("何様のつもり？")
-        doM_role = discord.utils.get(message.guild.roles, id= 616212704818102275)
+        doM_role = message.guild.get_role(616212704818102275)
         await message.author.add_roles(doM_role)
         return
 
@@ -1587,7 +1590,7 @@ async def ban_list(message, client1):
     事前BANしている人のリスト"""
 
     if not message.author.id == 523303776120209408:
-        await message.channel.send("このコマンドは使用できません")
+        await message.channel.send("何様のつもり？")
         return
 
     await message.channel.send("時間かかりますよ")
@@ -1611,7 +1614,9 @@ async def gban_list(message, client1):
     魔理沙はこのサーバには入りません"""
 
     if not message.author.id == 523303776120209408:
-        await message.channel.send("このコマンドは使用できません")
+        await message.channel.send("何様のつもり？")
+        doM_role = message.guild.get_role(616212704818102275)
+        await message.author.add_roles(doM_role)
         return
 
     with open("./datas/ban_server.json", mode="r", encoding="utf-8") as f:
@@ -1630,7 +1635,7 @@ async def leave_guild(message, client1):
 
     if not message.author.id == 523303776120209408:
         await message.channel.send("何様のつもり？")
-        doM_role = discord.utils.get(message.guild.roles, id=616212704818102275)
+        doM_role = message.guild.get_role(616212704818102275)
         await message.author.add_roles(doM_role)
         return
 

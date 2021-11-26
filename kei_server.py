@@ -1042,18 +1042,18 @@ async def edit_mcid(message):
         await message.channel.send("IDとして成り立ちません")
         return
     except IndexError:
-        await message.channel.send("引数が足りません\nヒント: `/mcid␣[set, del]␣userid␣MCID`")
+        await message.channel.send("引数が足りません\nヒント: `/mcid␣[add, del]␣userid␣MCID`")
         return
 
-    if operation == "set":
-        await set_mcid(message, user_id, mcid)
+    if operation == "add":
+        await add_mcid(message, user_id, mcid)
     elif operation == "del":
         await del_mcid(message, user_id, mcid)
     else:
-        await message.channel.send("第一引数が不正です\nヒント: `/mcid␣[set, del]␣userid␣MCID`")
+        await message.channel.send("第一引数が不正です\nヒント: `/mcid␣[add, del]␣userid␣MCID`")
 
 
-async def set_mcid(message, user_id , mcid):
+async def add_mcid(message, user_id , mcid):
     """
     指定ユーザーの登録されているMCIDに第4引数のMCIDを追加する関数"""
 

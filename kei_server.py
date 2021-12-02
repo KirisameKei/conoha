@@ -2033,6 +2033,7 @@ async def kikaku2(client1, message):
         console_ch = client1.get_channel(909357086817796107)
         await console_ch.send(f"whitelist remove {mcid}")
 
+        await message.author.remove_roles(kikaku_role)
         await message.channel.send("全ての種目の参加申請を取り消しました。")
         return
 

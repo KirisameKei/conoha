@@ -2037,7 +2037,7 @@ async def kikaku2(client1, message):
         return
 
     now = datetime.datetime.now()
-    finish_time = datetime.datetime(2021, 12, 19, 9, 0)
+    finish_time = datetime.datetime(2021, 12, 18, 12, 0)
     if now >= finish_time:
         await message.channel.send("参加締め切り時刻を過ぎています")
         return
@@ -2110,10 +2110,6 @@ async def kikaku2(client1, message):
 
     text += "に参加申請しました"
 
-    with open("./datas/kikaku.json", mode="w", encoding="utf-8") as f:
-        kikaku_json = json.dumps(kikaku_data, indent=4)
-        f.write(kikaku_json)
-
     console_ch = client1.get_channel(909357086817796107)
     await console_ch.send(f"whitelist add {mcid}")
     def check(m):
@@ -2125,7 +2121,10 @@ async def kikaku2(client1, message):
         return
     else:
         if "Added" in reply.content and "to the whitelist" in reply.content:
-            await message.author.add_roles(kikaku_role)
+            with open("./datas/kikaku.json", mode="w", encoding="utf-8") as f:
+                kikaku_json = json.dumps(kikaku_data, indent=4)
+                f.write(kikaku_json)
+                await message.author.add_roles(kikaku_role)
             await message.channel.send(text)
         else:
             await message.channel.send("ホワイトリストに追加できませんでした。MCID変更報告を行い最新のMCIDを入力してください。")

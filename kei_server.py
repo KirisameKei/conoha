@@ -129,8 +129,8 @@ async def on_message(client1, message):
     if message.channel.id == 634602609017225225:
         await login_bonus(message)
 
-    if message.channel.id == 665487669953953804:
-        await kikaku(message)
+    #if message.channel.id == 665487669953953804:
+    #    await kikaku(message)
 
     if message.channel.id == 665487669953953804:
         await kikaku2(client1, message)
@@ -2037,9 +2037,13 @@ async def kikaku2(client1, message):
         return
 
     now = datetime.datetime.now()
-    finish_time = datetime.datetime(2021, 11, 18, 15, 0)
+    finish_time = datetime.datetime(2021, 12, 19, 9, 0)
     if now >= finish_time:
-        await message.channel.send("現在企画は行われていません")
+        await message.channel.send("参加締め切り時刻を過ぎています")
+        return
+
+    if kikaku_role in message.author.roles:
+        await message.channel.send("あなたは既に参加しています。複数のMCIDでの参加はできません。参加MCIDの変更または参加競技の変更は一度`/cancel`をしてから行ってください")
         return
 
     mcid = message.content.replace("\_", "_")
@@ -2112,8 +2116,19 @@ async def kikaku2(client1, message):
 
     console_ch = client1.get_channel(909357086817796107)
     await console_ch.send(f"whitelist add {mcid}")
-
-    await message.channel.send(text)
+    def check(m):
+        return m.author.id == 732933405724901487 and m.content.endswith("to the whitelist")
+    try:
+        reply = await client1.wait_for("message", check=check, timeout=60)
+    except asyncio.TimeoutError:
+        await message.channel.send("ホワイトリストに追加できませんでした。サーバが忙しいか落ちているかもしれません")
+        return
+    else:
+        if "Added" in reply.content and "to the whitelist" in reply.content:
+            await message.author.add_roles(kikaku_role)
+            await message.channel.send(text)
+        else:
+            await message.channel.send("ホワイトリストに追加できませんでした。MCID変更報告を行い最新のMCIDを入力してください。")
 
 
 async def kikaku_announcement(client1):
@@ -2159,5 +2174,3 @@ async def kikaku_announcement(client1):
     ch = client1.get_channel(586420858512343050)
     await ch.send(content="<@&668021019700756490>", embed=embed)
     await ch.send("**受け取り期日は2021/12/14までとします\n**当選者で事情により期限内に受け取れない場合は期限内に言っていただければ対応します。参加賞は期限内に受け取ってください。\n参加賞受け取り希望の方でmineでの受け取りを希望する場合はs3にてmineでの受け渡しも可能とします。\n受け取り辞退をする場合<#665487669953953804>にて`/cancel`をしてください。")
-
-

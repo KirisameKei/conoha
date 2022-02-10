@@ -453,6 +453,7 @@ async def add_interest():
 #add_interest.start()
 
 
+"""
 @tasks.loop(seconds=60)
 async def delete_login_record():
     try:
@@ -478,7 +479,8 @@ async def change_login_record():
 
     except:
         unexpected_error()
-change_login_record.start()
+change_login_record.start()"""
+
 
 @tasks.loop(seconds=60)
 async def record_story():

@@ -837,8 +837,24 @@ def check_mcid_yet(mcid):
 def check_mcid_logined(mcid):
     """
     整地鯖にログインしたことがあるかをチェックする
-    boolまたはNoneTypeを返す"""
+    boolまたはNoneTypeを返す
+    整地鯖APIが使えない関係でmojangAPIに問い合わせる"""
 
+    url = f"https://api.mojang.com/users/profiles/minecraft/{mcid}"
+    try:
+        res = requests.get(url)
+        res.raise_for_status()
+        try:
+            res = res.json()
+        except json.decoder.JSONDecodeError:
+            return False
+        else:
+            return True
+
+    except requests.exceptions.HTTPError:
+        return None
+
+    """
     url = "https://ranking-gigantic.seichi.click/api/search/player"
     payload = {'lim': '1', 'q': mcid}
     try:
@@ -853,7 +869,7 @@ def check_mcid_logined(mcid):
             return False
 
     except requests.exceptions.HTTPError:
-        return None
+        return None"""
 
 
     """

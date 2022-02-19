@@ -12,6 +12,7 @@ import bs4
 import discord
 from discord import channel
 import jaconv
+import MySQLdb
 import requests
 
 async def on_member_join(client1, member):
@@ -77,6 +78,17 @@ async def on_member_remove(client1, member):
         user_data_dict[f"{member.id}"]["speak"] = 0
     except KeyError:
         user_data_dict[f"{member.id}"] = {"ban": False, "role": [], "mcid": [], "point": 0, "speak": 0}
+
+    connection = MySQLdb.connect(
+        host=os.getenv("mysql_host"),
+        user=os.getenv("mysql_user"),
+        passwd=os.getenv("mysql_passwd"),
+        db=os.getenv("mysql_db_name")
+    )
+    cursor = connection.cursor()
+    cursor.execute(f"delete from uuids where id={member.id}")
+    connection.commit()
+    connection.close()
 
     with open("./datas/user_data.json", mode="w") as f:
         user_data_json = json.dumps(user_data_dict, indent=4)
@@ -918,9 +930,9 @@ async def new_mcid(client1, message, message_content):
             return
         if not right_mcid:
             mcid = mcid.replace("_", "\\_")
-            await message.channel.send(f"**{mcid}**は```\n・実在しない\n・整地鯖にログインしたことがない\n\
-・MCIDを変更した\n・整地鯖ログイン後まだプレイヤーデータ保存がされていない\n・MCID変更後整地鯖にログインしてプレイヤーデータ保存がされていない```\n\
-可能性があります。\nこの機能は整地鯖ウェブページへの負荷となります。__**意図的に間違った入力を繰り返していると判断した場合処罰の対象になります。\
+            await message.channel.send(f"**{mcid}**は```\n・実在しない\n・~~整地鯖にログインしたことがない~~現在整地鯖にログインしていなくても認証可能\n\
+・MCIDを変更した\n・~~整地鯖ログイン後まだプレイヤーデータ保存がされていない~~現在整地鯖にログインしていなくても認証可能\n・~~MCID変更後整地鯖にログインしてプレイヤーデータ保存がされていない~~現在整地鯖にログインしていなくても認証可能```\n\
+可能性があります。\nこの機能は~~整地鯖ウェブページ~~mojangAPIへの負荷となります。__**意図的に間違った入力を繰り返していると判断した場合処罰の対象になります。\
 **__もしこれがバグならけいにお知らせください。")
         else:
             right_mcid_logined_list.append(mcid)
@@ -958,6 +970,35 @@ async def new_mcid(client1, message, message_content):
                 return
             if str(reaction.emoji) == "🇦":
                 user_data["mcid"] = mcid_list + right_mcid_logined_list
+
+    connection = MySQLdb.connect(
+        host=os.getenv("mysql_host"),
+        user=os.getenv("mysql_user"),
+        passwd=os.getenv("mysql_passwd"),
+        db=os.getenv("mysql_db_name")
+    )
+    cursor = connection.cursor()
+    for mcid in right_mcid_logined_list:
+        url = f"https://api.mojang.com/users/profiles/minecraft/{mcid}"
+        try:
+            res = requests.get(url)
+            res.raise_for_status()
+            try:
+                res = res.json()
+            except json.decoder.JSONDecodeError:
+                await message.channel.send("想定してないエラー( ᐛ👐) ﾊﾟｧ")
+                return
+            else:
+                uuid = res["id"]
+                cursor.execute(f"insert into uuids (id, uuid, mcid) values ({message.author.id}, '{uuid}', '{mcid}')")
+                connection.commit()
+
+        except requests.exceptions.HTTPError:
+            await message.channel.send("現在データ参照元が使用できない状態です。しばらくたってからもう一度お試しください。")
+            connection.close()
+            return
+
+    connection.close()
 
     with open("./datas/user_data.json", mode="w") as f:
         user_data_json = json.dumps(user_data_dict, indent=4)
@@ -1030,6 +1071,17 @@ async def change_mcid(message, message_content):
         await message.channel.send(f"**{before_mcid}**は登録されていません。現在あなたが登録しているMCID:\n{mcid_list}")
         return
 
+    connection = MySQLdb.connect(
+        host=os.getenv("mysql_host"),
+        user=os.getenv("mysql_user"),
+        passwd=os.getenv("mysql_passwd"),
+        db=os.getenv("mysql_db_name")
+    )
+    cursor = connection.cursor()
+    cursor.execute(f"update uuids set mcid='{after_mcid}' where mcid='{before_mcid}'")
+    connection.commit()
+    connection.close()
+
     with open("./datas/user_data.json", mode="w") as f:
         user_data_json = json.dumps(user_data_dict, indent=4)
         f.write(user_data_json)
@@ -1099,6 +1151,32 @@ async def add_mcid(message, user_id , mcid):
 
     mcid_list.append(mcid)
 
+    url = f"https://api.mojang.com/users/profiles/minecraft/{mcid}"
+    try:
+        res = requests.get(url)
+        res.raise_for_status()
+        try:
+            res = res.json()
+        except json.decoder.JSONDecodeError:
+            await message.channel.send("想定してないエラー( ᐛ👐) ﾊﾟｧ")
+            return
+        else:
+            uuid = res["id"]
+            connection = MySQLdb.connect(
+                host=os.getenv("mysql_host"),
+                user=os.getenv("mysql_user"),
+                passwd=os.getenv("mysql_passwd"),
+                db=os.getenv("mysql_db_name")
+            )
+            cursor = connection.cursor()
+            cursor.execute(f"insert into uuids (id, uuid, mcid) values ({user_id}, '{uuid}', '{mcid}')")
+            connection.commit()
+            connection.close()
+
+    except requests.exceptions.HTTPError:
+        await message.channel.send("現在データ参照元が使用できない状態です。しばらくたってからもう一度お試しください。")
+        return
+
     with open("./datas/user_data.json", mode="w") as f:
         user_data_json = json.dumps(user_data_dict, indent=4)
         f.write(user_data_json)
@@ -1129,6 +1207,17 @@ async def del_mcid(message, user_id, mcid):
         mcid = mcid.replace("_", "\\_")
         await message.channel.send(f"{member_name}は{mcid}というMCIDを登録していません")
         return
+
+    connection = MySQLdb.connect(
+        host=os.getenv("mysql_host"),
+        user=os.getenv("mysql_user"),
+        passwd=os.getenv("mysql_passwd"),
+        db=os.getenv("mysql_db_name")
+    )
+    cursor = connection.cursor()
+    cursor.execute(f"delete from uuids where mcid='{mcid}'")
+    connection.commit()
+    connection.close()
 
     with open("./datas/user_data.json", mode="w") as f:
         user_data_json = json.dumps(user_data_dict, indent=4)

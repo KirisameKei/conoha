@@ -1369,7 +1369,7 @@ async def accept(message, client1):
         except asyncio.TimeoutError:
             await message.channel.send("タイムアウトしました。acceptコマンドを打つところからやり直してください。")
             return
-        answer_filter = re.compile(r"いちがつ(ついたち|いちにち)にちようび(、|,|)きょうはがんじつです(。|.|)")
+        answer_filter = re.compile(r"いちがつ(ついたち|いちにち)にちようび(、|,|，|)(きょう|こんにち|こんじつ)はがんじつです(。|.|．|)")
         if answer_filter.fullmatch(reply.content):
             await message.author.remove_roles(new_role)
             await message.author.remove_roles(accept_able_role)

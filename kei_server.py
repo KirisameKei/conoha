@@ -141,11 +141,11 @@ async def on_message(client1, message):
     if message.channel.id == 634602609017225225:
         await login_bonus(message)
 
-    #if message.channel.id == 665487669953953804:
-    #    await kikaku(message)
-
     if message.channel.id == 665487669953953804:
-        await kikaku2(client1, message)
+        await kikaku(message)
+
+    #if message.channel.id == 665487669953953804:
+    #    await kikaku2(client1, message)
 
     if message.content.startswith("/pt "):
         await edit_pt(message)
@@ -2071,7 +2071,7 @@ async def kikaku(message):
         return
 
     now = datetime.datetime.now()
-    finish_time = datetime.datetime(2021, 11, 18, 15, 0)
+    finish_time = datetime.datetime(2022, 11, 18, 15, 0)
     if now >= finish_time:
         await message.channel.send("現在企画は行われていません")
         return
@@ -2242,7 +2242,7 @@ async def kikaku_announcement(client1):
 
     guild = client1.get_guild(585998962050203672)
     kikaku_role = discord.utils.get(guild.roles, id=668021019700756490)
-    tousen = random.sample(kikaku_role.members, k=3)
+    tousen = random.sample(kikaku_role.members, k=4)
 
     tousen_role = discord.utils.get(guild.roles, id=669720120314167307)
 
@@ -2278,4 +2278,4 @@ async def kikaku_announcement(client1):
     embed = discord.Embed(title=":tada:おめでとう:tada:", description=description, color=0xffff00)
     ch = client1.get_channel(586420858512343050)
     await ch.send(content="<@&668021019700756490>", embed=embed)
-    await ch.send("**受け取り期日は2021/12/14までとします\n**当選者で事情により期限内に受け取れない場合は期限内に言っていただければ対応します。参加賞は期限内に受け取ってください。\n参加賞受け取り希望の方でmineでの受け取りを希望する場合はs3にてmineでの受け渡しも可能とします。\n受け取り辞退をする場合<#665487669953953804>にて`/cancel`をしてください。")
+    await ch.send("**受け取り期日は2022/12/31までとします\n**当選者で事情により期限内に受け取れない場合は期限内に言っていただければ対応します。参加賞は期限内に受け取ってください。\n参加賞受け取り希望の方でmineでの受け取りを希望する場合はs3にてmineでの受け渡しも可能とします。\n受け取り辞退をする場合<#665487669953953804>にて`/cancel`をしてください。")

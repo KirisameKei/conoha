@@ -1,5 +1,6 @@
 import asyncio
 import datetime
+from email import message
 import json
 import math
 import os
@@ -10,7 +11,6 @@ import string
 
 import bs4
 import discord
-from discord import channel
 import jaconv
 import MySQLdb
 import requests
@@ -1236,31 +1236,57 @@ async def check_mcid_exist_now(client1):
     with open("./datas/user_data.json", mode="r") as f:
         user_data_dict = json.load(f)
 
-    alart_msg = ""
-    not_exist_mcid_list = []
+    description = ""
+    alart_ch = client1.get_channel(595072269483638785)
     for user_id in user_data_dict:
         for mcid in user_data_dict[user_id]["mcid"]:
             url = f"https://api.mojang.com/users/profiles/minecraft/{mcid}"
             try:
                 res = requests.get(url)
                 res.raise_for_status()
-                sorp = bs4.BeautifulSoup(res.text, "html.parser")
                 try:
-                    mcid_dict = json.loads(sorp.decode("utf-8"))
+                    res = res.json()
                 except json.decoder.JSONDecodeError:
-                    alart_msg += f"<@{user_id}> "
-                    not_exist_mcid_list.append(mcid)
+                    connection = MySQLdb.connect(
+                        host=os.getenv("mysql_host"),
+                        user=os.getenv("mysql_user"),
+                        passwd=os.getenv("mysql_passwd"),
+                        db=os.getenv("mysql_db_name")
+                    )
+                    cursor = connection.cursor()
+                    cursor.execute(f"select uuid from uuids where mcid='{mcid}'")
+                    result = cursor.fetchall()
+                    uuid = result[0][0]
+
+                    url = f"https://sessionserver.mojang.com/session/minecraft/profile/{uuid}"
+                    res = requests.get(url)
+                    res.raise_for_status()
+                    try:
+                        mcid_uuid_data = res.json()
+                    except json.decoder.JSONDecodeError:
+                        await client1.get_channel(636359382359080961).send(f"<@!523303776120209408>\n{mcid}も{uuid}も存在しません\nアカウントの削除が考えられます")
+
+                    new_mcid = mcid_uuid_data["name"]
+
+                    cursor.execute(f"update uuids set mcid='{new_mcid}' where mcid='{mcid}'")
+                    connection.commit()
+                    connection.close()
+
+                    mcid_list = user_data_dict[user_id]["mcid"]
+                    mcid_list.remove(mcid)
+                    mcid_list.append(new_mcid)
+                    
+                    description += f"<@{user_id}>の{mcid}を{new_mcid}に置換します\n"
             except requests.exceptions.HTTPError:
                 return
 
-    if len(not_exist_mcid_list) == 0:
-        return
+    with open("user_data.json", mode="w", encoding="utf-8") as f:
+        user_data_json = json.dumps(user_data_dict, indent=4)
+        f.write(user_data_json)
 
-    not_exist_mcid_list_str = str(not_exist_mcid_list)
-    not_exist_mcid_list_str = not_exist_mcid_list_str.replace("_", "\_")
-    alart_msg = f"{alart_msg}\nMCIDを変更しましたか？以下のMCIDは現在無効です。<#640833025822949387>で過去のMCID→現在のMCIDを入力してください\n{not_exist_mcid_list_str}"
-    alart_ch = client1.get_channel(585999375952642067)
-    await alart_ch.send(alart_msg)
+    description = description.replace("_", "\_")
+    embed = discord.Embed(description=description)
+    await alart_ch.send(embed=embed)
 
 
 async def marichan_invite(message):

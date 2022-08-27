@@ -2260,6 +2260,8 @@ async def kikaku_announcement(client1):
     """
     当選発表"""
 
+    """
+    4周年企画用
     guild = client1.get_guild(585998962050203672)
     kikaku_role = discord.utils.get(guild.roles, id=668021019700756490)
     tousen = random.sample(kikaku_role.members, k=4)
@@ -2269,7 +2271,7 @@ async def kikaku_announcement(client1):
     description = ""
     for mem in tousen:
         await mem.add_roles(tousen_role)
-        description += f"{mem.mention}\n"
+        description += f"{mem.mention}\n"""
 
     '''
     総額いくらを当選人数人でランダムに分配するときに使う
@@ -2295,7 +2297,12 @@ async def kikaku_announcement(client1):
         mcid = mcid.replace("_", "\_")
         description += f"{tousen[i].mention}: {mcid}: {give_list[i]}\n" '''
 
-    embed = discord.Embed(title=":tada:おめでとう:tada:", description=description, color=0xffff00)
-    ch = client1.get_channel(586420858512343050)
-    await ch.send(content="<@&668021019700756490>", embed=embed)
-    await ch.send("**受け取り期日は2022/12/31までとします\n**当選者で事情により期限内に受け取れない場合は期限内に言っていただければ対応します。参加賞は期限内に受け取ってください。\n参加賞受け取り希望の方でmineでの受け取りを希望する場合はs3にてmineでの受け渡しも可能とします。\n受け取り辞退をする場合<#665487669953953804>にて`/cancel`をしてください。")
+    #上記二つ共通部分
+    #embed = discord.Embed(title=":tada:おめでとう:tada:", description=description, color=0xffff00)
+    #ch = client1.get_channel(586420858512343050)
+    #await ch.send(content="<@&668021019700756490>", embed=embed)
+    #await ch.send("**受け取り期日は2022/12/31までとします\n**当選者で事情により期限内に受け取れない場合は期限内に言っていただければ対応します。参加賞は期限内に受け取ってください。\n参加賞受け取り希望の方でmineでの受け取りを希望する場合はs3にてmineでの受け渡しも可能とします。\n受け取り辞退をする場合<#665487669953953804>にて`/cancel`をしてください。")
+
+
+    import seichi_taikai
+    await seichi_taikai.seichi_result(client1)

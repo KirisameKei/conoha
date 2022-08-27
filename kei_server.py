@@ -141,11 +141,11 @@ async def on_message(client1, message):
     if message.channel.id == 634602609017225225:
         await login_bonus(message)
 
-    if message.channel.id == 665487669953953804:
-        await kikaku(message)
-
     #if message.channel.id == 665487669953953804:
-    #    await kikaku2(client1, message)
+    #    await kikaku(message)
+
+    if message.channel.id == 665487669953953804:
+        await kikaku2(client1, message)
 
     if message.content.startswith("/pt "):
         await edit_pt(message)
@@ -2132,50 +2132,59 @@ async def kikaku2(client1, message):
 
     kikaku_role = discord.utils.get(message.guild.roles, id=668021019700756490)
 
-    if message.content == "/cancel":
+    if message.content.startswith("/cancel"):
         with open("./datas/kikaku.json", mode="r", encoding="utf-8") as f:
-            kikaku_data = json.load(f)
+            kikaku_data_dict = json.load(f)
 
-        mcid = None
+        simple = False
         try:
-            mcid = kikaku_data["pt"][f"{message.author.id}"]
-            del kikaku_data["pt"][f"{message.author.id}"]
-        except KeyError:
-            pass
-        try:
-            mcid = kikaku_data["ta"][f"{message.author.id}"]
-            del kikaku_data["ta"][f"{message.author.id}"]
-        except KeyError:
-            pass
-        try:
-            mcid = kikaku_data["ex"][f"{message.author.id}"]
-            del kikaku_data["ex"][f"{message.author.id}"]
-        except KeyError:
-            pass
+            cancel_mcid = message.content.split()[1].replace("\\", "")
+        except IndexError:
+            cancel_mcid = None
+            simple = True
 
-        with open("./datas/kikaku.json", mode="w", encoding="utf-8") as f:
-            kikaku_json = json.dumps(kikaku_data, indent=4)
-            f.write(kikaku_json)
+        mcid_list = []
+        counter = 0
+        uuid = None
+        uuid_only = None
+        for key, value in kikaku_data_dict.items():
+            if value["user_id"] == message.author.id:
+                mcid_list.append(value["mcid"])
+                mcid = value["mcid"].replace("_", "\_")
+                uuid = key
+                counter += 1
 
-        if mcid is None:
-            await message.channel.send("あなたは参加申請していません")
+                if not simple and cancel_mcid == value["mcid"]:
+                    uuid_only = key
+
+        if simple and counter == 1:
+            del kikaku_data_dict[uuid]
+        elif simple and counter != 1:
+            await message.channel.send(f"あなたは複数アカウントで参加登録をしています。`/cancel MCID`で1アカウントずつ辞退申請をしてください\n現在あなたが参加申請しているアカウント: {mcid_list}")
             return
+        elif not simple:
+            try:
+                del kikaku_data_dict[uuid_only]
+            except KeyError:
+                await message.channel.send(f"そのMCIDは参加申請されていません。\n現在あなたが参加申請しているアカウント: {mcid_list}")
+                return
 
-        console_ch = client1.get_channel(909357086817796107)
-        await console_ch.send(f"whitelist remove {mcid}")
+        kikaku_data_json = json.dumps(kikaku_data_dict, indent=4)
+        with open("./datas/kikaku.json", mode="w", encoding="utf-8") as f:
+            f.write(kikaku_data_json)
 
-        await message.author.remove_roles(kikaku_role)
-        await message.channel.send("全ての種目の参加申請を取り消しました。")
+        if counter == 1:
+            await message.author.remove_roles(kikaku_role)
+        if cancel_mcid is None:
+            await message.channel.send(f"{mcid}の参加登録を取り消しました")
+        else:
+            await message.channel.send(f"{cancel_mcid}の参加登録を取り消しました")
         return
 
     now = datetime.datetime.now()
-    finish_time = datetime.datetime(2021, 12, 18, 12, 0)
+    finish_time = datetime.datetime(2022, 9, 23, 23, 55)
     if now >= finish_time:
         await message.channel.send("参加締め切り時刻を過ぎています")
-        return
-
-    if kikaku_role in message.author.roles:
-        await message.channel.send("あなたは既に参加しています。複数のMCIDでの参加はできません。参加MCIDの変更または参加競技の変更は一度`/cancel`をしてから行ってください")
         return
 
     mcid = message.content.replace("\_", "_")
@@ -2194,72 +2203,57 @@ async def kikaku2(client1, message):
         await message.channel.send(f"そのMCIDは登録されていません。\n現在登録されているMCID{mcid_list}")
         return
 
-    msg = await message.channel.send("30秒以内に参加する競技をリアクションしてください\n🇵: pt\n🇹: ta\n🇪: ex")
-    await msg.add_reaction("🇵")
-    await msg.add_reaction("🇹")
-    await msg.add_reaction("🇪")
+    connection = MySQLdb.connect(
+        host=os.getenv("mysql_host"),
+        user=os.getenv("mysql_user"),
+        passwd=os.getenv("mysql_passwd"),
+        db=os.getenv("mysql_db_name")
+    )
+    cursor = connection.cursor()
+    cursor.execute(f"select uuid from uuids where mcid='{mcid}'")
+    result = cursor.fetchall()
+    uuid = result[0][0]
+    connection.close()
 
-    await asyncio.sleep(30)
-
-    pt = False
-    ta = False
-    ex = False
-
-    msg = await message.channel.fetch_message(msg.id)
-    for reaction in msg.reactions:
-        if str(reaction.emoji) == "🇵":
-            async for user in reaction.users():
-                if user.id == message.author.id:
-                    pt = True
-
-        if str(reaction.emoji) == "🇹":
-            async for user in reaction.users():
-                if user.id == message.author.id:
-                    ta = True
-
-        if str(reaction.emoji) == "🇪":
-            async for user in reaction.users():
-                if user.id == message.author.id:
-                    ex = True
+    uuid_1 = uuid[:8]
+    uuid_2 = uuid[8:12]
+    uuid_3 = uuid[12:16]
+    uuid_4 = uuid[16:20]
+    uuid_5 = uuid[20:]
+    uuid = f"{uuid_1}-{uuid_2}-{uuid_3}-{uuid_4}-{uuid_5}"
 
     with open("./datas/kikaku.json", mode="r", encoding="utf-8") as f:
-        kikaku_data = json.load(f)
+        kikaku_data_dict = json.load(f)
 
-    text = ""
-    if pt:
-        kikaku_data["pt"][f"{message.author.id}"] = mcid
-        text += "pt\n"
-    if ta:
-        kikaku_data["ta"][f"{message.author.id}"] = mcid
-        text += "ta\n"
-    if ex:
-        kikaku_data["ex"][f"{message.author.id}"] = mcid
-        text += "ex\n"
+    #ゴミ構造だが後でscore順にソートすることを考えるとこの方が良い
+    #kikaku_data_dict = {
+    #    uuid: {
+    #        "user_id": user_id,
+    #        "mcid": mcid,
+    #        "score": 0
+    #    }
+    #}
 
-    if text == "":
-        await message.channel.send("タイムアウトしました")
-        return
-
-    text += "に参加申請しました"
-
-    console_ch = client1.get_channel(909357086817796107)
-    await console_ch.send(f"whitelist add {mcid}")
-    def check(m):
-        return m.author.id == 732933405724901487 and m.content.endswith("to the whitelist")
     try:
-        reply = await client1.wait_for("message", check=check, timeout=60)
-    except asyncio.TimeoutError:
-        await message.channel.send("ホワイトリストに追加できませんでした。サーバが忙しいか落ちているかもしれません")
-        return
+        mcid = kikaku_data_dict[uuid]["mcid"]
+    except KeyError:
+        kikaku_data_dict[uuid] = {
+            "user_id": message.author.id,
+            "mcid": mcid,
+            "score": 0
+        }
     else:
-        if "Added" in reply.content and "to the whitelist" in reply.content:
-            with open("./datas/kikaku.json", mode="w", encoding="utf-8") as f:
-                kikaku_json = json.dumps(kikaku_data, indent=4)
-                f.write(kikaku_json)
-                await message.author.add_roles(kikaku_role)
-            await message.channel.send(text)
-        else:
-            await message.channel.send("ホワイトリストに追加できませんでした。MCID変更報告を行い最新のMCIDを入力してください。")
+        mcid = mcid.replace("_", "\_")
+        await message.channel.send(f"{mcid}は既に参加登録されています")
+        return
+
+    kikaku_data_json = json.dumps(kikaku_data_dict, indent=4)
+    with open("./datas/kikaku.json", mode="w", encoding="utf-8") as f:
+        f.write(kikaku_data_json)
+
+    await message.author.add_roles(kikaku_role)
+    mcid = mcid.replace("_", "\_")
+    await message.channel.send(f"{mcid}の参加登録が完了しました")
 
 
 async def kikaku_announcement(client1):

@@ -1250,7 +1250,7 @@ async def check_mcid_exist_now(client1):
                 res.raise_for_status()
                 try:
                     res = res.json()
-                except json.decoder.JSONDecodeError:
+                except: #json.decoder.JSONDecodeError:
                     connection = MySQLdb.connect(
                         host=os.getenv("mysql_host"),
                         user=os.getenv("mysql_user"),
@@ -1282,15 +1282,15 @@ async def check_mcid_exist_now(client1):
                     
                     description += f"<@{user_id}>の{mcid}を{new_mcid}に置換します\n"
 
-                except:
-                    embed = discord.Embed(
-                        title="simplejson.errors.JSONDecodeError",
-                        description=res.text,
-                        color=0xffaa00
-                    )
-                    embed.add_field(name="userID", value=f"{user_id}")
-                    embed.add_field(name="MCID", value=mcid)
-                    await alart_ch.send(embed=embed)
+                #except:
+                #    embed = discord.Embed(
+                #        title="simplejson.errors.JSONDecodeError",
+                #        description=res.text,
+                #        color=0xffaa00
+                #    )
+                #    embed.add_field(name="userID", value=f"{user_id}")
+                #    embed.add_field(name="MCID", value=mcid)
+                #    await alart_ch.send(embed=embed)
 
             except requests.exceptions.HTTPError:
                 return

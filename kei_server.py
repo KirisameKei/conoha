@@ -1,6 +1,5 @@
 import asyncio
 import datetime
-from email import message
 import json
 import math
 import os
@@ -9,11 +8,12 @@ import re
 import shutil
 import string
 
-import bs4
 import discord
 import jaconv
 import MySQLdb
 import requests
+
+pass
 
 async def on_member_join(client1, member):
     """
@@ -200,6 +200,10 @@ async def on_message(client1, message):
 
     if message.content.startswith("/global_notice "):
         await global_notice(client1, message)
+
+    if message.content == "/test":
+        print("発火")
+        await check_mcid_exist_now(client1)
 
     if message.content == "/kikaku_test":
         if not message.author.id == 523303776120209408:
@@ -1277,6 +1281,17 @@ async def check_mcid_exist_now(client1):
                     mcid_list.append(new_mcid)
                     
                     description += f"<@{user_id}>の{mcid}を{new_mcid}に置換します\n"
+
+                except:
+                    embed = discord.Embed(
+                        title="simplejson.errors.JSONDecodeError",
+                        description=res.text,
+                        color=0xffaa00
+                    )
+                    embed.add_field(name="userID", value=f"{user_id}")
+                    embed.add_field(name="MCID", value=mcid)
+                    await alart_ch.send(embed=embed)
+
             except requests.exceptions.HTTPError:
                 return
 
@@ -2126,7 +2141,7 @@ async def kikaku(message):
     await message.channel.send(f"{message.author.name}さんが参加しました")
 
 
-async def kikaku2(client1, message):
+async def kikaku2(message):
     if message.author.bot:
         return
 

@@ -211,7 +211,8 @@ async def on_message(client1, message):
             doM_role = message.guild.get_role(616212704818102275)
             await message.author.add_roles(doM_role)
             return
-        await kikaku_announcement(client1)
+        await message.channel.send("この機能は現在使用できません")
+        #await kikaku_announcement(client1)
 
     #if message.content == "/issue":
     #    await issue_id(message)

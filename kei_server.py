@@ -12,8 +12,7 @@ import discord
 import jaconv
 import MySQLdb
 import requests
-
-pass
+from PIL import Image, ImageDraw, ImageFont
 
 async def on_member_join(client1, member):
     """
@@ -180,7 +179,7 @@ async def on_message(client1, message):
     if message.content == "/marichan_invite":
         await marichan_invite(message)
 
-    if message.content == "/accept":
+    if message.content == "/accept-test":
         await accept(message, client1)
 
     if message.content == "/version":
@@ -1380,6 +1379,34 @@ async def marichan_invite(message):
     #await message.channel.send("DMに招待urlを送信しました。管理者権限を持っているサーバに入れられます。")
 
 
+def create_pic_capcha():
+    hiragana_tuple = (
+        "あ", "い", "う", "え", "お",
+        "か", "き", "く", "け", "こ",
+        "さ", "し", "す", "せ", "そ",
+        "た", "ち", "つ", "て", "と",
+        "な", "に", "ぬ", "ね", "の",
+        "は", "ひ", "ふ", "へ", "ほ",
+        "ま", "み", "む", "め", "も",
+        "や", "ゆ", "よ",
+        "ら", "り", "る", "れ", "ろ",
+        "わ", "を", "ん"
+    )
+    image = Image.new("RGB", (250, 70), color=0x000000)
+    picture = ImageDraw.Draw(image)
+    mojiretsu = random.sample(hiragana_tuple, k=5)
+    x = 0
+    for moji in mojiretsu:
+        font =  ImageFont.truetype(random.choice(["cghkm_V6.ttc", "jwyz00b_V6.ttc"]), size=50)
+        y = random.randint(-10, 10)
+        picture.text((x, 10+y), text=moji, font=font, fill=0xffffff)
+        x += 50
+
+    picture.line((0, random.randint(10, 60), 250, random.randint(10, 60)), fill=0xffffff, width=4)
+    image.save("capcha.png")
+    return "".join(mojiretsu)
+
+
 async def accept(message, client1):
     """
     新規役職剥奪用関数"""
@@ -1400,14 +1427,81 @@ async def accept(message, client1):
         await message.channel.send("説明読みました？チャンネル違いますよ？")
         return
 
-    await message.channel.send("次の文章をひらがなで書いてください。\n一月一日日曜日、今日は元日です。")
+    mojiretsu = create_pic_capcha()
 
-    def check(m):
+    connection = MySQLdb.connect(
+        host=os.getenv("mysql_host"),
+        user=os.getenv("mysql_user"),
+        passwd=os.getenv("mysql_passwd"),
+        db="capcha"
+    )
+    cursor = connection.cursor()
+    cursor.execute(f"insert into capcha_tbl (user_id, moji) values ({message.author.id}, '{mojiretsu}')")
+    connection.commit()
+    connection.close()
+
+    file = discord.File("capcha.png")
+    msg = await message.channel.send(content=f"{message.author.mention}\nお読みください(ひらがな5文字)\n60秒無言でタイムアウト\nリアクションで画像変更", file=file)
+    await msg.add_reaction("🔄")
+
+    def check1(m):
+        return (m.channel == message.channel and m.author.id == message.author.id) or\
+                (m.channel == message.channel and m.author.id == client1.user.id)
+
+    while True:
+        try:
+            reply = await client1.wait_for("message", check=check1, timeout=60)
+        except asyncio.TimeoutError:
+            await message.channel.send("タイムアウトしました。acceptコマンドを打つところからやり直してください。")
+            connection = MySQLdb.connect(
+                host=os.getenv("mysql_host"),
+                user=os.getenv("mysql_user"),
+                passwd=os.getenv("mysql_passwd"),
+                db="capcha"
+            )
+            cursor = connection.cursor()
+            cursor.execute(f"delete from capcha_tbl where user_id={message.author.id}")
+            connection.commit()
+            connection.close()
+            return
+
+        connection = MySQLdb.connect(
+            host=os.getenv("mysql_host"),
+            user=os.getenv("mysql_user"),
+            passwd=os.getenv("mysql_passwd"),
+            db="capcha"
+        )
+        cursor = connection.cursor()
+        cursor.execute(f"select moji from capcha_tbl where user_id={message.author.id}")
+        result = cursor.fetchall()
+        right_mojiretsu = result[0][0]
+        connection.close()
+
+        if reply.author.id == client1.user.id:
+            pass #タイマーリセット
+        elif reply.content == right_mojiretsu:
+            connection = MySQLdb.connect(
+                host=os.getenv("mysql_host"),
+                user=os.getenv("mysql_user"),
+                passwd=os.getenv("mysql_passwd"),
+                db="capcha"
+            )
+            cursor = connection.cursor()
+            cursor.execute(f"delete from capcha_tbl where user_id={message.author.id}")
+            connection.commit()
+            connection.close()
+            break
+        else:
+            await message.channel.send("違います。やり直してください。")
+
+    await message.channel.send("あなたはたぶん人間です。第一認証を突破しました。\n次の文章をひらがなで書いてください。\n一月一日日曜日、今日は元日です。")
+
+    def check2(m):
         return m.author == message.author
 
     for i in range(3):
         try:
-            reply = await client1.wait_for("message", check=check, timeout=120)
+            reply = await client1.wait_for("message", check=check2, timeout=120)
         except asyncio.TimeoutError:
             await message.channel.send("タイムアウトしました。acceptコマンドを打つところからやり直してください。")
             return
@@ -1417,7 +1511,7 @@ async def accept(message, client1):
             await message.author.remove_roles(accept_able_role)
             await message.author.add_roles(crafter_role)
             await message.channel.send(
-                f"改めまして{message.author.name}さんようこそ{message.guild.name}へ！\n\
+                f"あなたはたぶん日本語ユーザーです。第二認証を突破しました。\n改めまして{message.author.name}さんようこそ{message.guild.name}へ！\n\
 <#664286990677573680>に自分がほしい役職があったらぜひ付けてみてください！\n\
 もしよろしければ<#586571234276540449>もしていただけると嬉しいです！"
             )
@@ -1431,6 +1525,34 @@ async def accept(message, client1):
 "日本語のお勉強を頑張りましょう。Please study Japanese.\n"
 '日本語が分かるようになったら再度acceptしてください。Type "/accept" when you can understand Japanese.'
     )
+
+
+async def on_reaction_add(client1, reaction, user):
+    msg = reaction.message
+    if user.mention in msg.content and str(reaction) == "🔄" and msg.author.id == client1.user.id:
+        connection = MySQLdb.connect(
+            host=os.getenv("mysql_host"),
+            user=os.getenv("mysql_user"),
+            passwd=os.getenv("mysql_passwd"),
+            db="capcha"
+        )
+        cursor = connection.cursor()
+        cursor.execute(f"select moji from capcha_tbl where user_id={user.id}")
+        result = cursor.fetchall()
+        try:
+            right_mojiretsu = result[0][0]
+        except IndexError:
+            return
+
+        mojiretsu = create_pic_capcha()
+        cursor.execute(f"update capcha_tbl set moji='{mojiretsu}' where user_id='{user.id}'")
+        connection.commit()        
+        connection.close()
+
+        file = discord.File("capcha.png")
+        await msg.delete()
+        msg2 = await msg.channel.send(content=f"{user.mention}\nお読みください(ひらがな5文字)\n60秒無言でタイムアウト\nリアクションで画像変更", file=file)
+        await msg2.add_reaction("🔄")
 
 
 async def ranking(client1, message):

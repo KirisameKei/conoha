@@ -273,6 +273,7 @@ async def on_member_join(member):
     except:
         unexpected_error()
 
+
 @client1.event
 async def on_member_remove(member):
     try:
@@ -406,6 +407,12 @@ async def on_guild_emojis_update(guild, before, after):
 
     except:
         unexpected_error()
+
+
+@client1.event
+async def on_reaction_add(reaction, user):
+    if reaction.message.guild.id == 585998962050203672: #けいの実験サーバ
+        await kei_server.on_reaction_add(client1, reaction, user)
 
 
 @tasks.loop(seconds=60)

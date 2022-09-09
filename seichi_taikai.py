@@ -93,8 +93,8 @@ async def seichi_result(client1):
                 description=description,
                 color=0xffff00
             )
-            #notice_ch = client1.get_channel(586420858512343050) #企画についてのお知らせ(本番用)
-            notice_ch = client1.get_channel(595072269483638785) #1組
+            notice_ch = client1.get_channel(586420858512343050) #企画についてのお知らせ(本番用)
+            #notice_ch = client1.get_channel(595072269483638785) #1組
             if loop == 1:
                 mention = "<@&668021019700756490>"
             else:
@@ -109,8 +109,8 @@ async def seichi_result(client1):
             description=description,
             color=0xffff00
         )
-        #notice_ch = client1.get_channel(586420858512343050) #企画についてのお知らせ(本番用)
-        notice_ch = client1.get_channel(595072269483638785) #1組
+        notice_ch = client1.get_channel(586420858512343050) #企画についてのお知らせ(本番用)
+        #notice_ch = client1.get_channel(595072269483638785) #1組
         if loop == 1:
             mention = "<@&668021019700756490>"
         else:

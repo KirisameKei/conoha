@@ -47,9 +47,9 @@ async def on_member_join(client1, member):
     info_embed.add_field(name="はじめに", value="<#586000955053441039>をお読みください\n大体の流れはそこに書いてあります。(botでも誘導します)", inline=False)
     info_embed.add_field(name="MCIDの報告", value="<#640833025822949387>でMCIDを報告してください\n\
 複数のMCIDを持っている方はスペース区切り、または改行区切りで同時に登録ができます。\n\
-JE版整地鯖にログインしたことのない方は<@523303776120209408>のDMまで、個別に対応します", inline=False)
+JE版マイクラを持っていない方は<@523303776120209408>のDMまで、個別に対応します", inline=False)
     info_embed.add_field(name="ルールへの同意", value="「はじめに」にあるルールに同意していただけるなら<#592581835343659030>で\
-**/accept**を実行してください。新規役職が外れます", inline=False)
+**/accept**を実行してください。人間であることの証明と日本語話者であることの証明が完了すれば新規役職が外れます", inline=False)
     info_embed.add_field(name="最後に", value="お楽しみください", inline=False)
     await infomation_ch.send(content=f"{member.mention}", embed=info_embed)
 

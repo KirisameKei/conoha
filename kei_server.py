@@ -179,7 +179,7 @@ async def on_message(client1, message):
     if message.content == "/marichan_invite":
         await marichan_invite(message)
 
-    if message.content == "/accept-test":
+    if message.content == "/accept":
         await accept(message, client1)
 
     if message.content == "/version":

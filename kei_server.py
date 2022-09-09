@@ -144,7 +144,7 @@ async def on_message(client1, message):
     #    await kikaku(message)
 
     if message.channel.id == 665487669953953804:
-        await kikaku2(client1, message)
+        await kikaku2(message)
 
     if message.content.startswith("/pt "):
         await edit_pt(message)

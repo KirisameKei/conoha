@@ -140,8 +140,8 @@ async def on_message(client1, message):
     if message.channel.id == 634602609017225225:
         await login_bonus(message)
 
-    #if message.channel.id == 665487669953953804:
-    #    await kikaku(message)
+    if message.channel.id == 665487669953953804:
+        await kikaku(message)
 
     if message.channel.id == 665487669953953804:
         await kikaku2(message)
@@ -2235,7 +2235,7 @@ async def kikaku(message):
         return
 
     now = datetime.datetime.now()
-    finish_time = datetime.datetime(2022, 11, 18, 15, 0)
+    finish_time = datetime.datetime(2022, 11, 18, 14, 55)
     if now >= finish_time:
         await message.channel.send("現在企画は行われていません")
         return
@@ -2264,6 +2264,7 @@ async def kikaku(message):
     await message.channel.send(f"{message.author.name}さんが参加しました")
 
 
+"""
 async def kikaku2(message):
     if message.author.bot:
         return
@@ -2391,15 +2392,14 @@ async def kikaku2(message):
 
     await message.author.add_roles(kikaku_role)
     mcid = mcid.replace("_", "\_")
-    await message.channel.send(f"{mcid}の参加登録が完了しました")
+    await message.channel.send(f"{mcid}の参加登録が完了しました")"""
 
 
 async def kikaku_announcement(client1):
     """
     当選発表"""
 
-    """
-    4周年企画用
+    #4周年企画用
     guild = client1.get_guild(585998962050203672)
     kikaku_role = discord.utils.get(guild.roles, id=668021019700756490)
     tousen = random.sample(kikaku_role.members, k=4)
@@ -2409,7 +2409,7 @@ async def kikaku_announcement(client1):
     description = ""
     for mem in tousen:
         await mem.add_roles(tousen_role)
-        description += f"{mem.mention}\n"""
+        description += f"{mem.mention}\n"
 
     '''
     総額いくらを当選人数人でランダムに分配するときに使う
@@ -2436,11 +2436,11 @@ async def kikaku_announcement(client1):
         description += f"{tousen[i].mention}: {mcid}: {give_list[i]}\n" '''
 
     #上記二つ共通部分
-    #embed = discord.Embed(title=":tada:おめでとう:tada:", description=description, color=0xffff00)
-    #ch = client1.get_channel(586420858512343050)
-    #await ch.send(content="<@&668021019700756490>", embed=embed)
-    #await ch.send("**受け取り期日は2022/12/31までとします\n**当選者で事情により期限内に受け取れない場合は期限内に言っていただければ対応します。参加賞は期限内に受け取ってください。\n参加賞受け取り希望の方でmineでの受け取りを希望する場合はs3にてmineでの受け渡しも可能とします。\n受け取り辞退をする場合<#665487669953953804>にて`/cancel`をしてください。")
+    embed = discord.Embed(title=":tada:おめでとう:tada:", description=description, color=0xffff00)
+    ch = client1.get_channel(586420858512343050)
+    await ch.send(content="<@&668021019700756490>", embed=embed)
+    await ch.send("**受け取り期日は2022/12/31までとします\n**当選者で事情により期限内に受け取れない場合は期限内に言っていただければ対応します。参加賞は期限内に受け取ってください。\n参加賞受け取り希望の方でmineでの受け取りを希望する場合はs3にてmineでの受け渡しも可能とします。\n受け取り辞退をする場合<#665487669953953804>にて`/cancel`をしてください。")
 
 
-    import seichi_taikai
-    await seichi_taikai.seichi_result(client1)
+    #import seichi_taikai
+    #await seichi_taikai.seichi_result(client1)

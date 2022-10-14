@@ -200,8 +200,7 @@ async def on_message(client1, message):
     if message.content.startswith("/global_notice "):
         await global_notice(client1, message)
 
-    if message.content == "/test":
-        print("発火")
+    if message.content == "/mcid_check":
         await check_mcid_exist_now(client1)
 
     if message.content == "/kikaku_test":
@@ -1235,7 +1234,7 @@ async def del_mcid(message, user_id, mcid):
 async def check_mcid_exist_now(client1):
     """
     現在登録されているMCIDが存在するかをチェックする関数
-    存在しない場合そのMCIDを登録している人にメンションを飛ばす"""
+    存在しない場合そのMCIDを最新のものに更新・・・してくれるのかなぁ・・・"""
 
     with open("./datas/user_data.json", mode="r") as f:
         user_data_dict = json.load(f)
@@ -1260,7 +1259,10 @@ async def check_mcid_exist_now(client1):
                     cursor = connection.cursor()
                     cursor.execute(f"select uuid from uuids where mcid='{mcid}'")
                     result = cursor.fetchall()
-                    uuid = result[0][0]
+                    try:
+                        uuid = result[0][0]
+                    except IndexError:
+                        await client1.get_channel(595072269483638785).send(mcid.replace("_", "\_"))
 
                     url = f"https://sessionserver.mojang.com/session/minecraft/profile/{uuid}"
                     res = requests.get(url)
@@ -1271,6 +1273,7 @@ async def check_mcid_exist_now(client1):
                         await client1.get_channel(636359382359080961).send(f"<@!523303776120209408>\n{mcid}も{uuid}も存在しません\nアカウントの削除が考えられます")
 
                     new_mcid = mcid_uuid_data["name"]
+                    await client1.get_channel(595072269483638785).send(f"{mcid} -> {new_mcid}")
 
                     cursor.execute(f"update uuids set mcid='{new_mcid}' where mcid='{mcid}'")
                     connection.commit()
@@ -1295,10 +1298,14 @@ async def check_mcid_exist_now(client1):
             except requests.exceptions.HTTPError:
                 return
 
+            await asyncio.sleep(1)
+
     with open("user_data.json", mode="w", encoding="utf-8") as f:
         user_data_json = json.dumps(user_data_dict, indent=4)
         f.write(user_data_json)
 
+    if description == "":
+        description = "今週のMCID更新者はいませんでした"    
     description = description.replace("_", "\_")
     embed = discord.Embed(description=description)
     await alart_ch.send(embed=embed)

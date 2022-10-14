@@ -422,7 +422,7 @@ async def mcid_check():
         now = datetime.datetime.now()
         weekday = datetime.datetime.now().weekday()
 
-        if weekday == 3 and now.hour == 21 and now.minute == 55:
+        if weekday == 5 and now.hour == 8 and now.minute == 55:
             await kei_server.check_mcid_exist_now(client1)
 
     except:
